@@ -1,0 +1,14 @@
+[
+    {"case": "lowest possible mark", "mark": 0, "grade": "F", "point": 0},
+    {"case": "top of F range", "mark": 39, "grade": "F", "point": 0},
+    {"case": "bottom of E range", "mark": 40, "grade": "E", "point": 1},
+    {"case": "top of E range", "mark": 44, "grade": "E", "point": 1},
+    {"case": "bottom of D range", "mark": 45, "grade": "D", "point": 2},
+    {"case": "top of D range", "mark": 49, "grade": "D", "point": 2},
+    {"case": "bottom of C range", "mark": 50, "grade": "C", "point": 3},
+    {"case": "top of C range", "mark": 59, "grade": "C", "point": 3},
+    {"case": "bottom of B range", "mark": 60, "grade": "B", "point": 4},
+    {"case": "top of B range", "mark": 69, "grade": "B", "point": 4},
+    {"case": "bottom of A range", "mark": 70, "grade": "A", "point": 5},
+    {"case": "highest possible mark", "mark": 100, "grade": "A", "point": 5}
+]

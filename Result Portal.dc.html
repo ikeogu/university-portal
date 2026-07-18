@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#e7ebf3}
+a{color:#22407e}a:hover{color:#16294f}
+input,select,button{font-family:inherit}
+input:focus,select:focus{outline:2px solid #22407e;outline-offset:1px}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes screenin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes popin{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes barin{from{flex-grow:0.0001}}
+button{transition:background .18s ease,border-color .18s ease,color .18s ease,transform .12s ease}
+button:active{transform:scale(.97)}
+input,select{transition:border-color .18s ease,box-shadow .18s ease}
+@media print{[data-noprint]{display:none!important}body:has(#printdoc) [data-app]{display:none!important}#printdoc{position:static!important;overflow:visible!important;background:#fff!important}body{background:#fff!important}}
+</style>
+</helmet>
+<div data-app="" style="min-height:100vh;display:flex;justify-content:center">
+<div style="width:100%;max-width:480px;min-height:100vh;background:#f7f8fb;box-shadow:0 0 44px rgba(18,32,66,.10);position:relative;display:flex;flex-direction:column">
+
+<sc-if value="{{ isLanding }}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="Landing" style="display:flex;flex-direction:column;flex:1;background:linear-gradient(175deg,#1c355f 0%,#16294f 58%,#111f3e 100%);color:#fff;animation:screenin .35s ease both">
+  <div style="padding:46px 26px 0">
+    <div style="display:flex;align-items:center;gap:12px;animation:screenin .45s ease both">
+      <div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;letter-spacing:.5px">US</div>
+      <div style="font-size:13px;font-weight:700;letter-spacing:.3px;opacity:.9">Unity State University<div style="font-size:10.5px;font-weight:600;opacity:.65;margin-top:1px">Dept. of Computer Science</div></div>
+    </div>
+    <div style="font-size:31px;font-weight:800;line-height:1.12;letter-spacing:-.5px;margin-top:30px;animation:screenin .45s ease both;animation-delay:.08s">Results without<br>the queue.</div>
+    <div style="font-size:13.5px;line-height:1.65;opacity:.78;margin-top:12px;animation:screenin .45s ease both;animation-delay:.15s">Result statements, score sheets and the master mark sheet — computed on the 5.0 CGPA scale the moment scores land. No notice boards, no waiting.</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:26px;animation:screenin .45s ease both;animation-delay:.22s">
+      <button sc-camel-on-click="{{ goCheck }}" style="height:52px;border:none;border-radius:14px;background:#fff;color:#1c355f;font-size:15px;font-weight:800;cursor:pointer" style-hover="background:#e9eef8">Check my result</button>
+      <button sc-camel-on-click="{{ goLogin }}" style="height:48px;border-radius:14px;border:1.5px solid rgba(255,255,255,.4);background:transparent;color:#fff;font-size:14px;font-weight:700;cursor:pointer" style-hover="background:rgba(255,255,255,.08)">Staff sign-in</button>
+    </div>
+  </div>
+  <div style="margin-top:auto;background:rgba(255,255,255,.06);border-radius:26px 26px 0 0;padding:22px 24px 18px;animation:screenin .5s ease both;animation-delay:.3s">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:36px;height:36px;border-radius:11px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex:none">≡</div>
+        <div><div style="font-size:13px;font-weight:700">Instant result statements</div><div style="font-size:11.5px;opacity:.65;margin-top:1px">Per-semester GPA and CGPA in the official format</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:36px;height:36px;border-radius:11px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex:none">⎙</div>
+        <div><div style="font-size:13px;font-weight:700">Print-ready documents</div><div style="font-size:11.5px;opacity:.65;margin-top:1px">Statements, score sheets and master mark sheets</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:36px;height:36px;border-radius:11px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex:none">▤</div>
+        <div><div style="font-size:13px;font-weight:700">Graduating sets in batches</div><div style="font-size:11.5px;opacity:.65;margin-top:1px">Eligible students grouped by set, on the 5.0 scale</div></div>
+      </div>
+    </div>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);text-align:center;font-size:10.5px;opacity:.55">Access restricted to the HoD and Exam Officer · Results are provisional until approved by Senate</div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isHome }}">
+<div data-screen-label="Student result check (public)" style="display:flex;flex-direction:column;flex:1;animation:screenin .3s ease both">
+  <div style="background:#1c355f;color:#fff;padding:32px 24px 44px;border-radius:0 0 28px 28px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <button sc-camel-on-click="{{ goLanding }}" style="width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;font-size:18px;cursor:pointer;line-height:1;flex:none">‹</button>
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.5px">US</div>
+      <div>
+        <div style="font-size:17px;font-weight:800;letter-spacing:.2px">Unity State University</div>
+        <div style="font-size:12px;opacity:.75;margin-top:2px">Department of Computer Science · Result Portal</div>
+      </div>
+    </div>
+  </div>
+  <div style="margin:-26px 18px 0;background:#fff;border-radius:20px;box-shadow:0 8px 28px rgba(18,32,66,.10);padding:22px 20px">
+    <div style="font-size:18px;font-weight:700;color:#17233f">Check your result</div>
+    <div style="font-size:12.5px;color:#66708a;margin:4px 0 16px">No sign-in needed — enter your matriculation number.</div>
+    <label style="display:block;font-size:11.5px;font-weight:600;color:#44506e;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">Matriculation number</label>
+    <input value="{{ matQ }}" sc-camel-on-change="{{ onMatQ }}" placeholder="e.g. U2022/5570001" style="width:100%;box-sizing:border-box;height:48px;border:1.5px solid #d5dbe8;border-radius:12px;padding:0 14px;font-size:15px;color:#17233f;background:#fbfcfe">
+    <sc-if value="{{ requireDob }}" hint-placeholder-val="{{ true }}">
+      <label style="display:block;font-size:11.5px;font-weight:600;color:#44506e;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px">Date of birth</label>
+      <input value="{{ dobQ }}" sc-camel-on-change="{{ onDobQ }}" placeholder="e.g. 14-MAR-2003" style="width:100%;box-sizing:border-box;height:48px;border:1.5px solid #d5dbe8;border-radius:12px;padding:0 14px;font-size:15px;color:#17233f;background:#fbfcfe">
+    </sc-if>
+    <label style="display:block;font-size:11.5px;font-weight:600;color:#44506e;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px">Semester — 2025/2026 session</label>
+    <div style="display:flex;gap:8px">
+      <button sc-camel-on-click="{{ sem1 }}" style="flex:1;height:42px;border-radius:11px;border:1.5px solid {{ sem1Bd }};background:{{ sem1Bg }};color:{{ sem1Fg }};font-size:13.5px;font-weight:600;cursor:pointer">First</button>
+      <button sc-camel-on-click="{{ sem2 }}" style="flex:1;height:42px;border-radius:11px;border:1.5px solid {{ sem2Bd }};background:{{ sem2Bg }};color:{{ sem2Fg }};font-size:13.5px;font-weight:600;cursor:pointer">Second</button>
+    </div>
+    <sc-if value="{{ hasErr }}"><div style="margin-top:12px;font-size:13px;color:#b3261e;background:#fbeeed;border-radius:10px;padding:10px 12px">{{ err }}</div></sc-if>
+    <button sc-camel-on-click="{{ check }}" style="width:100%;height:50px;margin-top:16px;border:none;border-radius:13px;background:#22407e;color:#fff;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#1a3266">View my result</button>
+    <div style="margin-top:10px;font-size:11.5px;color:#8c95ab;text-align:center">Demo: try U2022/5570001 with any date of birth</div>
+  </div>
+  <div style="margin:16px 18px 0;background:#fff;border-radius:16px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div>
+      <div style="font-size:14px;font-weight:700;color:#17233f">Staff access</div>
+      <div style="font-size:12px;color:#66708a;margin-top:2px">Lecturers, Exam Officer &amp; HoD</div>
+    </div>
+    <button sc-camel-on-click="{{ goLogin }}" style="height:40px;padding:0 18px;border-radius:11px;border:1.5px solid #22407e;background:#fff;color:#22407e;font-size:13px;font-weight:700;cursor:pointer" style-hover="background:#eef2fa">Sign in</button>
+  </div>
+  <div style="margin-top:auto;padding:22px;text-align:center;font-size:11px;color:#9aa3b8">Unity State University · Faculty of Computing<br>Results are provisional until approved by Senate.</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isResult }}">
+<div data-screen-label="Student result view" style="display:flex;flex-direction:column;flex:1;padding-bottom:24px;animation:screenin .3s ease both">
+  <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:#fff;border-bottom:1px solid #e7ebf3;position:sticky;top:0;z-index:5">
+    <button sc-camel-on-click="{{ backResult }}" style="width:36px;height:36px;border-radius:10px;border:1px solid #dde3ee;background:#fff;color:#22407e;font-size:18px;cursor:pointer;line-height:1">‹</button>
+    <div style="font-size:15px;font-weight:700;color:#17233f">Academic result</div>
+  </div>
+  <div style="margin:16px 16px 0;background:#1c355f;color:#fff;border-radius:18px;padding:18px 18px 16px">
+    <div style="font-size:16px;font-weight:800">{{ stName }}</div>
+    <div style="font-size:12.5px;opacity:.8;margin-top:3px">{{ stMat }} · B.Sc Computer Science</div>
+    <div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap">
+      <span style="font-size:11px;font-weight:600;background:rgba(255,255,255,.14);border-radius:999px;padding:4px 10px">{{ stMode }}</span>
+      <span style="font-size:11px;font-weight:600;background:rgba(255,255,255,.14);border-radius:999px;padding:4px 10px">{{ stSo }} State</span>
+      <span style="font-size:11px;font-weight:600;background:rgba(255,255,255,.14);border-radius:999px;padding:4px 10px">{{ stSet }} set · 400 Level</span>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;margin:14px 16px 0">
+    <button sc-camel-on-click="{{ sem1 }}" style="flex:1;height:40px;border-radius:11px;border:1.5px solid {{ sem1Bd }};background:{{ sem1Bg }};color:{{ sem1Fg }};font-size:13px;font-weight:600;cursor:pointer">First semester</button>
+    <button sc-camel-on-click="{{ sem2 }}" style="flex:1;height:40px;border-radius:11px;border:1.5px solid {{ sem2Bd }};background:{{ sem2Bg }};color:{{ sem2Fg }};font-size:13px;font-weight:600;cursor:pointer">Second semester</button>
+  </div>
+  <div style="margin:14px 16px 0;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e7ebf3">
+    <div style="display:grid;grid-template-columns:1fr 36px 48px 44px;gap:8px;padding:11px 16px;background:#f2f5fa;font-size:10.5px;font-weight:700;color:#66708a;text-transform:uppercase;letter-spacing:.5px">
+      <div>Course</div><div style="text-align:center">CU</div><div style="text-align:center">Mark</div><div style="text-align:center">Grade</div>
+    </div>
+    <sc-for list="{{ resultRows }}" as="r" hint-placeholder-count="5">
+      <div style="display:grid;grid-template-columns:1fr 36px 48px 44px;gap:8px;padding:12px 16px;border-top:1px solid #eef1f7;align-items:center">
+        <div><div style="font-size:13.5px;font-weight:700;color:#17233f">{{ r.code }}</div><div style="font-size:11.5px;color:#7a839c;margin-top:1px">{{ r.title }}</div></div>
+        <div style="text-align:center;font-size:13px;color:#44506e">{{ r.cu }}</div>
+        <div style="text-align:center;font-size:13.5px;font-weight:600;color:#17233f">{{ r.total }}</div>
+        <div style="display:flex;justify-content:center"><span style="min-width:26px;text-align:center;font-size:12.5px;font-weight:800;color:#fff;background:{{ r.color }};border-radius:8px;padding:3px 7px">{{ r.grade }}</span></div>
+      </div>
+    </sc-for>
+  </div>
+  <div style="margin:14px 16px 0;background:#fff;border-radius:16px;border:1px solid #e7ebf3;padding:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center">
+    <div><div style="font-size:10.5px;font-weight:700;color:#8c95ab;text-transform:uppercase;letter-spacing:.4px">TCU</div><div style="font-size:20px;font-weight:800;color:#17233f;margin-top:3px">{{ semTcu }}</div></div>
+    <div><div style="font-size:10.5px;font-weight:700;color:#8c95ab;text-transform:uppercase;letter-spacing:.4px">GPA</div><div style="font-size:20px;font-weight:800;color:#22407e;margin-top:3px">{{ semGpa }}</div></div>
+    <div><div style="font-size:10.5px;font-weight:700;color:#8c95ab;text-transform:uppercase;letter-spacing:.4px">CGPA</div><div style="font-size:20px;font-weight:800;color:#0a7d4f;margin-top:3px">{{ cgpa }}</div></div>
+  </div>
+  <button sc-camel-on-click="{{ printSlip }}" style="margin:16px 16px 0;height:50px;border:none;border-radius:13px;background:#22407e;color:#fff;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#1a3266">Print result statement</button>
+  <div style="margin:10px 16px 0;text-align:center;font-size:11px;color:#9aa3b8">Statement follows the official university format.</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isLogin }}">
+<div data-screen-label="Staff sign-in" style="display:flex;flex-direction:column;flex:1;animation:screenin .3s ease both">
+  <div style="display:flex;align-items:center;gap:10px;padding:14px 16px">
+    <button sc-camel-on-click="{{ goHome }}" style="width:36px;height:36px;border-radius:10px;border:1px solid #dde3ee;background:#fff;color:#22407e;font-size:18px;cursor:pointer;line-height:1">‹</button>
+    <div style="font-size:15px;font-weight:700;color:#17233f">Staff sign-in</div>
+  </div>
+  <div style="margin:8px 18px 0;background:#fff;border-radius:20px;border:1px solid #e7ebf3;padding:22px 20px">
+    <div style="font-size:18px;font-weight:800;color:#17233f">Welcome back</div>
+    <div style="font-size:12.5px;color:#66708a;margin:4px 0 18px">For lecturers, the Exam Officer and the HoD only.</div>
+    <label style="display:block;font-size:11.5px;font-weight:600;color:#44506e;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">Staff email</label>
+    <input placeholder="you@unitystate.edu.ng" style="width:100%;box-sizing:border-box;height:48px;border:1.5px solid #d5dbe8;border-radius:12px;padding:0 14px;font-size:15px;background:#fbfcfe">
+    <label style="display:block;font-size:11.5px;font-weight:600;color:#44506e;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px">Password</label>
+    <input type="password" placeholder="********" style="width:100%;box-sizing:border-box;height:48px;border:1.5px solid #d5dbe8;border-radius:12px;padding:0 14px;font-size:15px;background:#fbfcfe">
+    <button sc-camel-on-click="{{ loginLect }}" style="width:100%;height:50px;margin-top:18px;border:none;border-radius:13px;background:#22407e;color:#fff;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#1a3266">Sign in</button>
+  </div>
+  <div style="margin:18px 18px 0">
+    <div style="font-size:11px;font-weight:700;color:#8c95ab;text-transform:uppercase;letter-spacing:.6px;text-align:center;margin-bottom:10px">Prototype — quick access</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button sc-camel-on-click="{{ loginLect }}" style="height:46px;border-radius:12px;border:1px solid #dde3ee;background:#fff;color:#17233f;font-size:13.5px;font-weight:600;cursor:pointer;text-align:left;padding:0 16px" style-hover="border-color:#22407e">Dr. Aisha Balogun — <span style="color:#66708a;font-weight:500">Lecturer</span></button>
+      <button sc-camel-on-click="{{ loginEO }}" style="height:46px;border-radius:12px;border:1px solid #dde3ee;background:#fff;color:#17233f;font-size:13.5px;font-weight:600;cursor:pointer;text-align:left;padding:0 16px" style-hover="border-color:#22407e">Dr. Femi Oyelaran — <span style="color:#66708a;font-weight:500">Exam Officer</span></button>
+      <button sc-camel-on-click="{{ loginHod }}" style="height:46px;border-radius:12px;border:1px solid #dde3ee;background:#fff;color:#17233f;font-size:13.5px;font-weight:600;cursor:pointer;text-align:left;padding:0 16px" style-hover="border-color:#22407e">Prof. Kelechi Nnamdi — <span style="color:#66708a;font-weight:500">Head of Department</span></button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isLect }}">
+<div data-screen-label="Lecturer dashboard" style="display:flex;flex-direction:column;flex:1;padding-bottom:24px;animation:screenin .3s ease both">
+  <div style="background:#1c355f;color:#fff;padding:24px 22px 30px;border-radius:0 0 24px 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+    <div>
+      <div style="font-size:12px;opacity:.7">Good day,</div>
+      <div style="font-size:18px;font-weight:800;margin-top:2px">{{ userName }}</div>
+      <span style="display:inline-block;margin-top:8px;font-size:11px;font-weight:700;background:rgba(255,255,255,.14);border-radius:999px;padding:4px 12px">Lecturer</span>
+    </div>
+    <button sc-camel-on-click="{{ logout }}" style="height:34px;padding:0 14px;border-radius:10px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Sign out</button>
+  </div>
+  <div style="display:flex;gap:8px;margin:16px 16px 0">
+    <button sc-camel-on-click="{{ sem1 }}" style="flex:1;height:38px;border-radius:11px;border:1.5px solid {{ sem1Bd }};background:{{ sem1Bg }};color:{{ sem1Fg }};font-size:12.5px;font-weight:600;cursor:pointer">First semester</button>
+    <button sc-camel-on-click="{{ sem2 }}" style="flex:1;height:38px;border-radius:11px;border:1.5px solid {{ sem2Bd }};background:{{ sem2Bg }};color:{{ sem2Fg }};font-size:12.5px;font-weight:600;cursor:pointer">Second semester</button>
+  </div>
+  <div style="margin:18px 16px 8px;font-size:13px;font-weight:700;color:#44506e">Your courses — {{ semName }} semester, 2025/2026</div>
+  <div style="display:flex;flex-direction:column;gap:10px;margin:0 16px">
+    <sc-for list="{{ lectCourses }}" as="c" hint-placeholder-count="2">
+      <button sc-camel-on-click="{{ c.open }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid #e7ebf3;border-radius:16px;padding:16px;cursor:pointer;text-align:left" style-hover="border-color:#22407e">
+        <div>
+          <div style="font-size:15px;font-weight:800;color:#17233f">{{ c.code }}</div>
+          <div style="font-size:12.5px;color:#66708a;margin-top:2px">{{ c.title }}</div>
+          <div style="font-size:11.5px;color:#8c95ab;margin-top:6px">{{ c.cu }} units · {{ c.n }} students registered</div>
+        </div>
+        <div style="color:#22407e;font-size:20px">›</div>
+      </button>
+    </sc-for>
+  </div>
+  <sc-if value="{{ lectNoCourses }}"><div style="margin:0 16px;background:#fff;border:1px dashed #d5dbe8;border-radius:16px;padding:22px;text-align:center;font-size:12.5px;color:#8c95ab">No courses allocated to you this semester.</div></sc-if>
+  <div style="margin:16px;background:#eef2fa;border-radius:14px;padding:14px 16px;font-size:12px;color:#44506e;line-height:1.5">Tap a course to enter CA and exam scores. Scores save as you type and can be printed as the official score sheet.</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isEntry }}">
+<div data-screen-label="Score entry" style="display:flex;flex-direction:column;flex:1;padding-bottom:86px;animation:screenin .3s ease both">
+  <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid #e7ebf3;position:sticky;top:0;z-index:5">
+    <button sc-camel-on-click="{{ backEntry }}" style="width:36px;height:36px;border-radius:10px;border:1px solid #dde3ee;background:#fff;color:#22407e;font-size:18px;cursor:pointer;line-height:1;flex:none">‹</button>
+    <div style="min-width:0">
+      <div style="font-size:15px;font-weight:800;color:#17233f">{{ courseCode }} — score entry</div>
+      <div style="font-size:11.5px;color:#66708a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ courseTitle }} · {{ entrySemName }} semester 2025/2026</div>
+    </div>
+  </div>
+  <div style="margin:14px 16px 0;background:#fff;border:1px solid #e7ebf3;border-radius:16px;overflow:hidden">
+    <div style="overflow-x:auto">
+      <div style="min-width:432px">
+        <div style="display:grid;grid-template-columns:26px 1fr 58px 58px 44px 40px;gap:6px;padding:10px 12px;background:#f2f5fa;font-size:10px;font-weight:700;color:#66708a;text-transform:uppercase;letter-spacing:.4px;align-items:center">
+          <div>#</div><div>Student</div><div style="text-align:center">CA /30</div><div style="text-align:center">Exam /70</div><div style="text-align:center">Total</div><div style="text-align:center">Gr</div>
+        </div>
+        <sc-for list="{{ entryRows }}" as="r" hint-placeholder-count="8">
+          <div style="display:grid;grid-template-columns:26px 1fr 58px 58px 44px 40px;gap:6px;padding:9px 12px;border-top:1px solid #eef1f7;align-items:center">
+            <div style="font-size:11.5px;color:#8c95ab">{{ r.i }}</div>
+            <div style="min-width:0"><div style="font-size:12.5px;font-weight:700;color:#17233f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</div><div style="font-size:10.5px;color:#8c95ab">{{ r.mat }}</div></div>
+            <input value="{{ r.ca }}" sc-camel-on-change="{{ r.onCa }}" sc-camel-input-mode="numeric" style="width:100%;box-sizing:border-box;height:38px;border:1.5px solid #d5dbe8;border-radius:9px;text-align:center;font-size:13.5px;font-weight:600;color:#17233f;background:#fbfcfe">
+            <input value="{{ r.exam }}" sc-camel-on-change="{{ r.onExam }}" sc-camel-input-mode="numeric" style="width:100%;box-sizing:border-box;height:38px;border:1.5px solid #d5dbe8;border-radius:9px;text-align:center;font-size:13.5px;font-weight:600;color:#17233f;background:#fbfcfe">
+            <div style="text-align:center;font-size:13.5px;font-weight:700;color:#17233f">{{ r.total }}</div>
+            <div style="display:flex;justify-content:center"><span style="min-width:22px;text-align:center;font-size:12px;font-weight:800;color:#fff;background:{{ r.color }};border-radius:7px;padding:3px 6px">{{ r.grade }}</span></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  <div style="margin:10px 16px 0;font-size:11px;color:#9aa3b8;text-align:center">CA is capped at 30, exam at 70. Grades update as you type.</div>
+  <div style="position:sticky;bottom:0;margin-top:auto;background:rgba(247,248,251,.95);backdrop-filter:blur(4px);border-top:1px solid #e7ebf3;padding:12px 16px;display:flex;gap:10px">
+    <button sc-camel-on-click="{{ saveScores }}" style="flex:1;height:48px;border:none;border-radius:12px;background:#22407e;color:#fff;font-size:14px;font-weight:700;cursor:pointer" style-hover="background:#1a3266">Save scores</button>
+    <button sc-camel-on-click="{{ printSheet }}" style="flex:1;height:48px;border-radius:12px;border:1.5px solid #22407e;background:#fff;color:#22407e;font-size:14px;font-weight:700;cursor:pointer" style-hover="background:#eef2fa">Print score sheet</button>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isAdmin }}">
+<div data-screen-label="Admin (HoD / Exam Officer)" style="display:flex;flex-direction:column;flex:1;padding-bottom:70px;animation:screenin .3s ease both">
+  <div style="background:#1c355f;color:#fff;padding:22px 22px 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+    <div>
+      <div style="font-size:17px;font-weight:800">{{ userName }}</div>
+      <span style="display:inline-block;margin-top:7px;font-size:11px;font-weight:700;background:rgba(255,255,255,.14);border-radius:999px;padding:4px 12px">{{ userRole }}</span>
+    </div>
+    <button sc-camel-on-click="{{ logout }}" style="height:34px;padding:0 14px;border-radius:10px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Sign out</button>
+  </div>
+
+  <sc-if value="{{ tabS }}" hint-placeholder-val="{{ true }}">
+  <div style="padding:16px 16px 0">
+    <div style="display:flex;gap:8px">
+      <input value="{{ search }}" sc-camel-on-change="{{ onSearch }}" placeholder="Search name or mat no…" style="flex:1;box-sizing:border-box;height:44px;border:1.5px solid #d5dbe8;border-radius:12px;padding:0 14px;font-size:14px;background:#fff;min-width:0">
+      <button sc-camel-on-click="{{ goOnboard }}" style="height:44px;padding:0 14px;border:none;border-radius:12px;background:#22407e;color:#fff;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap" style-hover="background:#1a3266">+ Onboard</button>
+      <button sc-camel-on-click="{{ goBulkStudents }}" style="height:44px;padding:0 12px;border-radius:12px;border:1.5px solid #22407e;background:#fff;color:#22407e;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap" style-hover="background:#eef2fa">⬆ Bulk</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;animation:popin .3s ease both">
+      <div style="background:#fff;border:1px solid #e7ebf3;border-radius:14px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22407e">{{ studentCount }}</div><div style="font-size:10px;font-weight:700;color:#8c95ab;text-transform:uppercase;letter-spacing:.4px;margin-top:2px">Students</div></div>
+      <div style="background:#fff;border:1px solid #e7ebf3;border-radius:14px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22407e">{{ courseCount }}</div><div style="font-size:10px;font-weight:700;color:#8c95ab;text-transform:uppercase;letter-spacing:.4px;margin-top:2px">Courses</div></div>
+      <div style="background:#fff;border:1px solid #e7ebf3;border-radius:14px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22407e">{{ lectCount }}</div><div style="font-size:10px;font-weight:700;color:#8c95ab;text-transform:uppercase;letter-spacing:.4px;margin-top:2px">Lecturers</div></div>
+    </div>
+    <div style="margin:14px 0 8px;font-size:12px;font-weight:700;color:#66708a">{{ studentCount }} students · 400 Level, 2025/2026</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ studentList }}" as="st" hint-placeholder-count="5">
+        <button sc-camel-on-click="{{ st.view }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid #e7ebf3;border-radius:14px;padding:13px 15px;cursor:pointer;text-align:left" style-hover="border-color:#22407e">
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:700;color:#17233f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ st.name }}</div>
+            <div style="font-size:11.5px;color:#8c95ab;margin-top:2px">{{ st.mat }} · {{ st.mode }} · {{ st.so }} · {{ st.set }} set</div>
+          </div>
+          <div style="color:#8c95ab;font-size:18px">›</div>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ tabL }}">
+  <div style="padding:16px 16px 0">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
+      <div style="font-size:15px;font-weight:800;color:#17233f">Lecturers &amp; course allocation</div>
+      <button sc-camel-on-click="{{ goBulkLecturers }}" style="height:36px;padding:0 12px;border-radius:10px;border:1.5px solid #22407e;background:#fff;color:#22407e;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap" style-hover="background:#eef2fa">⬆ Bulk upload</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ lecturerRows }}" as="l" hint-placeholder-count="4">
+        <div style="background:#fff;border:1px solid #e7ebf3;border-radius:14px;padding:14px 15px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <div style="font-size:13.5px;font-weight:700;color:#17233f">{{ l.name }}</div>
+            <span style="font-size:10.5px;font-weight:700;color:#22407e;background:#eef2fa;border-radius:999px;padding:3px 10px">{{ l.role }}</span>
+          </div>
+          <div style="font-size:11px;color:#8c95ab;margin:8px 0 6px">Tap a course to assign or remove:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <sc-for list="{{ l.chips }}" as="ch" hint-placeholder-count="6">
+              <button sc-camel-on-click="{{ ch.toggle }}" style="font-size:11px;font-weight:700;border-radius:999px;padding:6px 12px;cursor:pointer;border:1.5px solid {{ ch.bd }};background:{{ ch.bg }};color:{{ ch.fg }}">{{ ch.code }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <input value="{{ newLect }}" sc-camel-on-change="{{ onNewLect }}" placeholder="New lecturer's full name…" style="flex:1;box-sizing:border-box;height:44px;border:1.5px solid #d5dbe8;border-radius:12px;padding:0 14px;font-size:14px;background:#fff;min-width:0">
+      <button sc-camel-on-click="{{ addLect }}" style="height:44px;padding:0 16px;border:none;border-radius:12px;background:#22407e;color:#fff;font-size:13px;font-weight:700;cursor:pointer" style-hover="background:#1a3266">Add</button>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:#9aa3b8">New lecturers are added without courses; allocate from the department course list.</div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ tabC }}">
+  <div style="padding:16px 16px 0">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:#17233f">Department courses</div>
+        <div style="font-size:12px;color:#66708a;margin-top:3px">Credit units used in GPA / CGPA computation</div>
+      </div>
+      <button sc-camel-on-click="{{ goBulkCourses }}" style="height:36px;padding:0 12px;border-radius:10px;border:1.5px solid #22407e;background:#fff;color:#22407e;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap" style-hover="background:#eef2fa">⬆ Bulk upload</button>
+    </div>
+    <div style="margin:14px 0 8px;font-size:12px;font-weight:700;color:#66708a">First semester · {{ s1CuTotal }} units</div>
+    <div style="background:#fff;border:1px solid #e7ebf3;border-radius:16px;overflow:hidden">
+      <sc-for list="{{ courseRows1 }}" as="c" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 15px;border-top:1px solid #eef1f7">
+          <div style="min-width:0">
+            <div style="font-size:13px;font-weight:700;color:#17233f">{{ c.code }} <span style="font-weight:500;color:#66708a">— {{ c.title }}</span></div>
+            <div style="font-size:11px;color:#8c95ab;margin-top:2px">{{ c.lect }}</div>
+          </div>
+          <span style="flex:none;font-size:11px;font-weight:800;color:#22407e;background:#eef2fa;border-radius:8px;padding:4px 9px">{{ c.cu }} CU</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin:14px 0 8px;font-size:12px;font-weight:700;color:#66708a">Second semester · {{ s2CuTotal }} units</div>
+    <div style="background:#fff;border:1px solid #e7ebf3;border-radius:16px;overflow:hidden">
+      <sc-for list="{{ courseRows2 }}" as="c" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 15px;border-top:1px solid #eef1f7">
+          <div style="min-width:0">
+            <div style="font-size:13px;font-weight:700;color:#17233f">{{ c.code }} <span style="font-weight:500;color:#66708a">— {{ c.title }}</span></div>
+            <div style="font-size:11px;color:#8c95ab;margin-top:2px">{{ c.lect }}</div>
+          </div>
+          <span style="flex:none;font-size:11px;font-weight:800;color:#22407e;background:#eef2fa;border-radius:8px;padding:4px 9px">{{ c.cu }} CU</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-top:16px;background:#fff;border:1px solid #e7ebf3;border-radius:16px;padding:16px">
+      <div style="font-size:13px;font-weight:800;color:#17233f;margin-bottom:10px">Add a course</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <input value="{{ ncCode }}" sc-camel-on-change="{{ onNcCode }}" placeholder="Code e.g. CSC 411" style="box-sizing:border-box;height:42px;border:1.5px solid #d5dbe8;border-radius:11px;padding:0 12px;font-size:13px;background:#fbfcfe;min-width:0">
+        <input value="{{ ncTitle }}" sc-camel-on-change="{{ onNcTitle }}" placeholder="Course title" style="box-sizing:border-box;height:42px;border:1.5px solid #d5dbe8;border-radius:11px;padding:0 12px;font-size:13px;background:#fbfcfe;min-width:0">
+        <sc-raw-select value="{{ ncCu }}" sc-camel-on-change="{{ onNcCu }}" style="height:42px;border:1.5px solid #d5dbe8;border-radius:11px;padding:0 10px;font-size:13px;background:#fbfcfe;color:#17233f">
+          <option value="1">1 credit unit</option><option value="2">2 credit units</option><option value="3">3 credit units</option><option value="4">4 credit units</option><option value="6">6 credit units</option>
+        </sc-raw-select>
+        <sc-raw-select value="{{ ncSem }}" sc-camel-on-change="{{ onNcSem }}" style="height:42px;border:1.5px solid #d5dbe8;border-radius:11px;padding:0 10px;font-size:13px;background:#fbfcfe;color:#17233f">
+          <option value="1">First semester</option><option value="2">Second semester</option>
+        </sc-raw-select>
+      </div>
+      <button sc-camel-on-click="{{ addCourse }}" style="width:100%;height:44px;margin-top:10px;border:none;border-radius:11px;background:#22407e;color:#fff;font-size:13px;font-weight:700;cursor:pointer" style-hover="background:#1a3266">Add course</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ tabU }}">
+  <div style="padding:16px 16px 0">
+    <div style="font-size:15px;font-weight:800;color:#17233f">Bulk upload</div>
+    <div style="font-size:12px;color:#66708a;margin:4px 0 12px">Students, lecturers, courses and semester scores can all be uploaded as spreadsheets.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+      <sc-for list="{{ upTypeChips }}" as="t" hint-placeholder-count="4">
+        <button sc-camel-on-click="{{ t.pick }}" style="font-size:11.5px;font-weight:700;border-radius:999px;padding:7px 13px;cursor:pointer;border:1.5px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</button>
+      </sc-for>
+    </div>
+    <sc-if value="{{ up0 }}" hint-placeholder-val="{{ true }}">
+      <div style="border:2px dashed #b9c4da;border-radius:16px;background:#fff;padding:34px 20px;text-align:center">
+        <div style="width:46px;height:46px;border-radius:50%;background:#eef2fa;color:#22407e;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">↑</div>
+        <div style="font-size:13.5px;font-weight:700;color:#17233f">{{ upTitle }}</div>
+        <div style="font-size:11.5px;color:#8c95ab;margin:4px 0 16px">{{ upHint }}</div>
+        <button sc-camel-on-click="{{ upPick }}" style="height:42px;padding:0 22px;border:none;border-radius:11px;background:#22407e;color:#fff;font-size:13px;font-weight:700;cursor:pointer" style-hover="background:#1a3266">Choose file</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ up1 }}">
+      <div style="background:#fff;border:1px solid #e7ebf3;border-radius:16px;padding:16px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:38px;height:38px;border-radius:10px;background:#eef2fa;color:#22407e;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none">XLSX</div>
+          <div style="min-width:0"><div style="font-size:13px;font-weight:700;color:#17233f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ upFile }}</div><div style="font-size:11px;color:#8c95ab">{{ upDet }}</div></div>
+        </div>
+        <div style="margin:14px 0 8px;font-size:11px;font-weight:700;color:#66708a;text-transform:uppercase;letter-spacing:.4px">Column mapping</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <sc-for list="{{ upMap }}" as="mch" hint-placeholder-count="4">
+            <span style="font-size:11px;font-weight:600;color:#17233f;background:#f2f5fa;border-radius:8px;padding:5px 10px">{{ mch }}</span>
+          </sc-for>
+        </div>
+        <button sc-camel-on-click="{{ upProcess }}" style="width:100%;height:46px;margin-top:16px;border:none;border-radius:12px;background:#22407e;color:#fff;font-size:14px;font-weight:700;cursor:pointer" style-hover="background:#1a3266">{{ upBtn }}</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ up3 }}">
+      <div style="background:#fff;border:1px solid #e7ebf3;border-radius:16px;padding:34px 20px;text-align:center;animation:popin .25s ease both">
+        <div style="width:40px;height:40px;border-radius:50%;border:3.5px solid #e7ebf3;border-top-color:#22407e;margin:0 auto 14px;animation:spin .8s linear infinite"></div>
+        <div style="font-size:13.5px;font-weight:700;color:#17233f">Processing {{ upFile }}</div>
+        <div style="font-size:11.5px;color:#8c95ab;margin-top:4px">Validating rows and computing grades…</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ up2 }}">
+      <div style="background:#fff;border:1px solid #d3e8dc;border-radius:16px;padding:24px 20px;text-align:center;animation:popin .3s ease both">
+        <div style="width:50px;height:50px;border-radius:50%;background:#e7f4ed;color:#0a7d4f;font-size:24px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">✓</div>
+        <div style="font-size:15px;font-weight:800;color:#17233f">{{ upDoneTitle }}</div>
+        <div style="font-size:12.5px;color:#66708a;margin:6px 0 18px;line-height:1.5">{{ upDoneMsg }}</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-if value="{{ upIsScores }}">
+            <button sc-camel-on-click="{{ upViewSlip }}" style="height:44px;border:none;border-radius:12px;background:#22407e;color:#fff;font-size:13px;font-weight:700;cursor:pointer" style-hover="background:#1a3266">View a sample statement</button>
+            <button sc-camel-on-click="{{ tabMaster }}" style="height:44px;border-radius:12px;border:1.5px solid #22407e;background:#fff;color:#22407e;font-size:13px;font-weight:700;cursor:pointer" style-hover="background:#eef2fa">Open master mark sheet</button>
+          </sc-if>
+          <sc-if value="{{ upNotScores }}">
+            <button sc-camel-on-click="{{ upGoTab }}" style="height:44px;border:none;border-radius:12px;background:#22407e;color:#fff;font-size:13px;font-weight:700;cursor:pointer" style-hover="background:#1a3266">{{ upGoLabel }}</button>
+          </sc-if>
+          <button sc-camel-on-click="{{ upReset }}" style="height:40px;border:none;background:none;color:#66708a;font-size:12px;font-weight:600;cursor:pointer">Upload another file</button>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ tabM }}">
+  <div style="padding:16px 16px 0">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:#17233f">Master mark sheet</div>
+        <div style="font-size:12px;color:#66708a;margin-top:3px">Eligible graduating students · B.Sc Computer Science · 2025/2026</div>
+      </div>
+      <button sc-camel-on-click="{{ printMaster }}" style="height:40px;padding:0 14px;border:none;border-radius:11px;background:#22407e;color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap" style-hover="background:#1a3266">Print sheet</button>
+    </div>
+    <div style="display:flex;gap:6px;margin:14px 0 10px">
+      <sc-for list="{{ setChips }}" as="sc" hint-placeholder-count="2">
+        <button sc-camel-on-click="{{ sc.pick }}" style="font-size:11.5px;font-weight:700;border-radius:999px;padding:7px 14px;cursor:pointer;border:1.5px solid {{ sc.bd }};background:{{ sc.bg }};color:{{ sc.fg }}">{{ sc.label }}</button>
+      </sc-for>
+    </div>
+    <div style="display:flex;height:10px;border-radius:999px;overflow:hidden;background:#e7ebf3;margin:0 0 10px">
+      <sc-for list="{{ classDist }}" as="d" hint-placeholder-count="3">
+        <div style="flex-grow:{{ d.n }};flex-basis:0;background:{{ d.color }};animation:barin .7s ease both"></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px">
+      <sc-for list="{{ classCounts }}" as="c" hint-placeholder-count="5">
+        <span style="font-size:11px;font-weight:700;color:#17233f;background:#fff;border:1px solid #e7ebf3;border-radius:999px;padding:5px 11px">{{ c.label }}: {{ c.n }}</span>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border:1px solid #e7ebf3;border-radius:16px;overflow:hidden">
+      <div style="display:grid;grid-template-columns:26px 1fr 52px 96px;gap:8px;padding:10px 14px;background:#f2f5fa;font-size:10px;font-weight:700;color:#66708a;text-transform:uppercase;letter-spacing:.4px">
+        <div>#</div><div>Student</div><div style="text-align:center">CGPA</div><div>Class</div>
+      </div>
+      <sc-for list="{{ masterRows }}" as="m" hint-placeholder-count="8">
+        <div style="display:grid;grid-template-columns:26px 1fr 52px 96px;gap:8px;padding:11px 14px;border-top:1px solid #eef1f7;align-items:center">
+          <div style="font-size:11.5px;color:#8c95ab">{{ m.sn }}</div>
+          <div style="min-width:0"><div style="font-size:12.5px;font-weight:700;color:#17233f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.name }}</div><div style="font-size:10.5px;color:#8c95ab">{{ m.mat }}</div></div>
+          <div style="text-align:center;font-size:13px;font-weight:800;color:#22407e">{{ m.cgpa }}</div>
+          <div style="font-size:11px;font-weight:700;color:#44506e">{{ m.cls }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin:10px 0 0;font-size:11px;color:#9aa3b8;text-align:center">Printed sheet lists all sets in batches with the overall summary.</div>
+  </div>
+  </sc-if>
+
+  <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid #e7ebf3;display:grid;grid-template-columns:repeat(5,1fr);z-index:10">
+    <button sc-camel-on-click="{{ tabStudents }}" style="height:56px;border:none;background:none;cursor:pointer;font-size:11px;font-weight:700;color:{{ tabSC }};border-top:2.5px solid {{ tabSB }}">Students</button>
+    <button sc-camel-on-click="{{ tabLects }}" style="height:56px;border:none;background:none;cursor:pointer;font-size:11px;font-weight:700;color:{{ tabLC }};border-top:2.5px solid {{ tabLB }}">Lecturers</button>
+    <button sc-camel-on-click="{{ tabCourses }}" style="height:56px;border:none;background:none;cursor:pointer;font-size:11px;font-weight:700;color:{{ tabCC }};border-top:2.5px solid {{ tabCB }}">Courses</button>
+    <button sc-camel-on-click="{{ tabUpload }}" style="height:56px;border:none;background:none;cursor:pointer;font-size:11px;font-weight:700;color:{{ tabUC }};border-top:2.5px solid {{ tabUB }}">Upload</button>
+    <button sc-camel-on-click="{{ tabMaster }}" style="height:56px;border:none;background:none;cursor:pointer;font-size:11px;font-weight:700;color:{{ tabMC }};border-top:2.5px solid {{ tabMB }}">Master</button>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isOnboard }}">
+<div data-screen-label="Onboard student" style="display:flex;flex-direction:column;flex:1;padding-bottom:24px;animation:screenin .3s ease both">
+  <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:#fff;border-bottom:1px solid #e7ebf3">
+    <button sc-camel-on-click="{{ backAdmin }}" style="width:36px;height:36px;border-radius:10px;border:1px solid #dde3ee;background:#fff;color:#22407e;font-size:18px;cursor:pointer;line-height:1">‹</button>
+    <div style="font-size:15px;font-weight:700;color:#17233f">Onboard a student</div>
+  </div>
+  <div style="margin:16px 16px 0;background:#fff;border:1px solid #e7ebf3;border-radius:18px;padding:20px 18px">
+    <label style="display:block;font-size:11.5px;font-weight:600;color:#44506e;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">Full name (Surname first)</label>
+    <input value="{{ onbName }}" sc-camel-on-change="{{ onOnbName }}" placeholder="e.g. OKORO, Chidera Faith" style="width:100%;box-sizing:border-box;height:46px;border:1.5px solid #d5dbe8;border-radius:12px;padding:0 14px;font-size:14px;background:#fbfcfe">
+    <label style="display:block;font-size:11.5px;font-weight:600;color:#44506e;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px">Matriculation number</label>
+    <input value="{{ onbMat }}" sc-camel-on-change="{{ onOnbMat }}" placeholder="e.g. U2022/5570016" style="width:100%;box-sizing:border-box;height:46px;border:1.5px solid #d5dbe8;border-radius:12px;padding:0 14px;font-size:14px;background:#fbfcfe">
+    <label style="display:block;font-size:11.5px;font-weight:600;color:#44506e;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px">Date of birth</label>
+    <input value="{{ onbDob }}" sc-camel-on-change="{{ onOnbDob }}" placeholder="e.g. 08-JAN-2004" style="width:100%;box-sizing:border-box;height:46px;border:1.5px solid #d5dbe8;border-radius:12px;padding:0 14px;font-size:14px;background:#fbfcfe">
+    <label style="display:block;font-size:11.5px;font-weight:600;color:#44506e;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px">State of origin</label>
+    <input value="{{ onbSo }}" sc-camel-on-change="{{ onOnbSo }}" placeholder="e.g. Rivers" style="width:100%;box-sizing:border-box;height:46px;border:1.5px solid #d5dbe8;border-radius:12px;padding:0 14px;font-size:14px;background:#fbfcfe">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+      <div>
+        <label style="display:block;font-size:11.5px;font-weight:600;color:#44506e;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">Marital status</label>
+        <sc-raw-select value="{{ onbMs }}" sc-camel-on-change="{{ onOnbMs }}" style="width:100%;height:46px;border:1.5px solid #d5dbe8;border-radius:12px;padding:0 10px;font-size:14px;background:#fbfcfe;color:#17233f">
+          <option value="Single">Single</option><option value="Married">Married</option>
+        </sc-raw-select>
+      </div>
+      <div>
+        <label style="display:block;font-size:11.5px;font-weight:600;color:#44506e;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">Mode of study</label>
+        <sc-raw-select value="{{ onbMode }}" sc-camel-on-change="{{ onOnbMode }}" style="width:100%;height:46px;border:1.5px solid #d5dbe8;border-radius:12px;padding:0 10px;font-size:14px;background:#fbfcfe;color:#17233f">
+          <option value="Full time">Full time</option><option value="Part time">Part time</option>
+        </sc-raw-select>
+      </div>
+    </div>
+    <sc-if value="{{ hasOnbErr }}"><div style="margin-top:12px;font-size:13px;color:#b3261e;background:#fbeeed;border-radius:10px;padding:10px 12px">{{ onbErr }}</div></sc-if>
+    <button sc-camel-on-click="{{ submitOnboard }}" style="width:100%;height:50px;margin-top:18px;border:none;border-radius:13px;background:#22407e;color:#fff;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#1a3266">Onboard student</button>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</div>
+
+<sc-if value="{{ printing }}">
+<div id="printdoc" style="position:fixed;inset:0;background:#dfe4ee;z-index:60;overflow:auto">
+  <div data-noprint="" style="position:sticky;top:0;z-index:5;background:#17233f;color:#fff;display:flex;align-items:center;gap:12px;padding:10px 16px">
+    <button sc-camel-on-click="{{ closePrint }}" style="height:36px;padding:0 14px;border-radius:9px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">‹ Back</button>
+    <div style="font-size:13px;font-weight:700;flex:1">{{ printTitle }}</div>
+    <div style="font-size:11px;opacity:.7">{{ printHint }}</div>
+    <button sc-camel-on-click="{{ doPrint }}" style="height:36px;padding:0 18px;border-radius:9px;border:none;background:#fff;color:#17233f;font-size:12.5px;font-weight:700;cursor:pointer">Print / Save PDF</button>
+  </div>
+
+  <sc-if value="{{ pSlip }}">
+  <div style="max-width:794px;margin:24px auto;background:#fff;box-shadow:0 6px 30px rgba(18,32,66,.18);padding:44px 48px;font-family:'Times New Roman',Times,serif;color:#111">
+    <div style="text-align:center;border-bottom:2.5px solid #111;padding-bottom:12px">
+      <div style="font-size:20px;font-weight:700;letter-spacing:1px">UNITY STATE UNIVERSITY</div>
+      <div style="font-size:13px;margin-top:3px">FACULTY OF COMPUTING · DEPARTMENT OF COMPUTER SCIENCE</div>
+      <div style="font-size:14px;font-weight:700;margin-top:8px;text-decoration:underline">STATEMENT OF STUDENT'S ACADEMIC RESULTS</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;font-size:12.5px;margin-top:14px">
+      <div><b>FULL NAMES:</b> {{ stName }}</div><div><b>DATE OF BIRTH:</b> {{ stDob }}</div>
+      <div><b>MATRICULATION NUMBER:</b> {{ stMat }}</div><div><b>STATE OF ORIGIN:</b> {{ stSoU }}</div>
+      <div><b>Programme:</b> B.Sc COMPUTER SCIENCE</div><div><b>Mode of Study:</b> {{ stModeU }}</div>
+      <div><b>Marital Status:</b> {{ stMsU }}</div><div><b>Academic Year:</b> 2025/2026</div>
+    </div>
+    <div style="font-size:10.5px;margin-top:10px;border:1px solid #999;padding:6px 8px;background:#f7f7f7">KEY: CU = Course Unit, GP = Grade Point, QP = Quality Point. Course codes highlighted indicate failed courses. Grading: A (70–100) = 5, B (60–69) = 4, C (50–59) = 3, D (45–49) = 2, E (40–44) = 1, F (0–39) = 0.</div>
+    <div style="font-size:13px;font-weight:700;margin:16px 0 6px">SEMESTER I</div>
+    <div style="border:1px solid #333">
+      <div style="display:grid;grid-template-columns:82px 1fr 34px 36px 44px 42px 50px 32px 36px;font-size:11px;font-weight:700;background:#efefef;border-bottom:1px solid #333">
+        <div style="padding:5px 6px;border-right:1px solid #333">CODE</div><div style="padding:5px 6px;border-right:1px solid #333">TITLE OF COURSE</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">CU</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">CA</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">EXAM</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">MARK</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">GRADE</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">GP</div><div style="padding:5px 4px;text-align:center">QP</div>
+      </div>
+      <sc-for list="{{ slipRows1 }}" as="r" hint-placeholder-count="5">
+        <div style="display:grid;grid-template-columns:82px 1fr 34px 36px 44px 42px 50px 32px 36px;font-size:11px;border-bottom:1px solid #bbb">
+          <div style="padding:4px 6px;border-right:1px solid #bbb;font-weight:700">{{ r.code }}</div><div style="padding:4px 6px;border-right:1px solid #bbb">{{ r.titleU }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center">{{ r.cu }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center">{{ r.ca }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center">{{ r.exam }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center;font-weight:700">{{ r.total }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center;font-weight:700;color:{{ r.pcolor }}">{{ r.grade }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center">{{ r.gp }}</div><div style="padding:4px;text-align:center">{{ r.qp }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-size:12px;margin-top:6px;line-height:1.6">Total Course Unit (TCU) : <b>{{ s1tcu }}</b> &nbsp;·&nbsp; Total Quality Point (TQP) : <b>{{ s1tqp }}</b> &nbsp;·&nbsp; Semester GPA : <b>{{ s1gpa }}</b></div>
+    <div style="font-size:13px;font-weight:700;margin:16px 0 6px">SEMESTER II</div>
+    <div style="border:1px solid #333">
+      <div style="display:grid;grid-template-columns:82px 1fr 34px 36px 44px 42px 50px 32px 36px;font-size:11px;font-weight:700;background:#efefef;border-bottom:1px solid #333">
+        <div style="padding:5px 6px;border-right:1px solid #333">CODE</div><div style="padding:5px 6px;border-right:1px solid #333">TITLE OF COURSE</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">CU</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">CA</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">EXAM</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">MARK</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">GRADE</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">GP</div><div style="padding:5px 4px;text-align:center">QP</div>
+      </div>
+      <sc-for list="{{ slipRows2 }}" as="r" hint-placeholder-count="5">
+        <div style="display:grid;grid-template-columns:82px 1fr 34px 36px 44px 42px 50px 32px 36px;font-size:11px;border-bottom:1px solid #bbb">
+          <div style="padding:4px 6px;border-right:1px solid #bbb;font-weight:700">{{ r.code }}</div><div style="padding:4px 6px;border-right:1px solid #bbb">{{ r.titleU }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center">{{ r.cu }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center">{{ r.ca }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center">{{ r.exam }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center;font-weight:700">{{ r.total }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center;font-weight:700;color:{{ r.pcolor }}">{{ r.grade }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center">{{ r.gp }}</div><div style="padding:4px;text-align:center">{{ r.qp }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-size:12px;margin-top:6px;line-height:1.6">Total Course Unit (TCU) : <b>{{ s2tcu }}</b> &nbsp;·&nbsp; Total Quality Point (TQP) : <b>{{ s2tqp }}</b> &nbsp;·&nbsp; Semester GPA : <b>{{ s2gpa }}</b></div>
+    <div style="font-size:13px;margin-top:10px;border-top:1.5px solid #111;padding-top:8px">Cumulative Grade Point Average (CGPA) : <b>{{ cgpa }}</b></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px;font-size:12px">
+      <div><div style="border-top:1px dotted #111;padding-top:5px">Exam Officer — Name, Sign &amp; Date</div></div>
+      <div><div style="border-top:1px dotted #111;padding-top:5px">Head of Department — Name, Sign &amp; Date</div></div>
+    </div>
+    <div style="font-size:9.5px;margin-top:22px;color:#333;text-align:center">DISCLAIMER: THIS DOCUMENT IS FOR THE STUDENT'S PERSONAL USE ONLY. IT DOES NOT REPRESENT AN OFFICIAL TRANSCRIPT OF UNITY STATE UNIVERSITY.</div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ pSheet }}">
+  <div style="max-width:794px;margin:24px auto;background:#fff;box-shadow:0 6px 30px rgba(18,32,66,.18);padding:44px 48px;font-family:'Times New Roman',Times,serif;color:#111">
+    <div style="text-align:center;border-bottom:2.5px solid #111;padding-bottom:12px">
+      <div style="font-size:20px;font-weight:700;letter-spacing:1px">UNITY STATE UNIVERSITY</div>
+      <div style="font-size:13px;margin-top:3px">FACULTY OF COMPUTING · DEPARTMENT OF COMPUTER SCIENCE</div>
+      <div style="font-size:14px;font-weight:700;margin-top:8px;text-decoration:underline">COURSE SCORE SHEET</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;font-size:12.5px;margin-top:14px">
+      <div><b>COURSE:</b> {{ courseCode }} — {{ courseTitleU }}</div><div><b>COURSE UNIT:</b> {{ courseCu }}</div>
+      <div><b>SESSION:</b> 2025/2026 · {{ entrySemNameU }} SEMESTER</div><div><b>LECTURER:</b> {{ userNameU }}</div>
+    </div>
+    <div style="border:1px solid #333;margin-top:14px">
+      <div style="display:grid;grid-template-columns:36px 128px 1fr 56px 62px 56px 60px;font-size:11px;font-weight:700;background:#efefef;border-bottom:1px solid #333">
+        <div style="padding:5px 6px;border-right:1px solid #333;text-align:center">S/N</div><div style="padding:5px 6px;border-right:1px solid #333">MAT. NO.</div><div style="padding:5px 6px;border-right:1px solid #333">NAME</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">CA (30)</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">EXAM (70)</div><div style="padding:5px 4px;border-right:1px solid #333;text-align:center">TOTAL</div><div style="padding:5px 4px;text-align:center">GRADE</div>
+      </div>
+      <sc-for list="{{ entryRows }}" as="r" hint-placeholder-count="8">
+        <div style="display:grid;grid-template-columns:36px 128px 1fr 56px 62px 56px 60px;font-size:11px;border-bottom:1px solid #bbb">
+          <div style="padding:4px 6px;border-right:1px solid #bbb;text-align:center">{{ r.i }}</div><div style="padding:4px 6px;border-right:1px solid #bbb">{{ r.mat }}</div><div style="padding:4px 6px;border-right:1px solid #bbb">{{ r.name }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center">{{ r.ca }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center">{{ r.exam }}</div><div style="padding:4px;border-right:1px solid #bbb;text-align:center;font-weight:700">{{ r.total }}</div><div style="padding:4px;text-align:center;font-weight:700;color:{{ r.pcolor }}">{{ r.grade }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px;font-size:12px">
+      <div><div style="border-top:1px dotted #111;padding-top:5px">Course Lecturer — Name, Sign &amp; Date</div></div>
+      <div><div style="border-top:1px dotted #111;padding-top:5px">Head of Department — Name, Sign &amp; Date</div></div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ pMaster }}">
+  <div style="width:1160px;margin:24px auto;background:#fff;box-shadow:0 6px 30px rgba(18,32,66,.18);padding:40px 44px;font-family:'Times New Roman',Times,serif;color:#111">
+    <div style="text-align:center;border-bottom:2.5px solid #111;padding-bottom:12px">
+      <div style="font-size:19px;font-weight:700;letter-spacing:1px">UNITY STATE UNIVERSITY</div>
+      <div style="font-size:12.5px;margin-top:3px">FACULTY OF COMPUTING · DEPARTMENT OF COMPUTER SCIENCE</div>
+      <div style="font-size:13.5px;font-weight:700;margin-top:8px;text-decoration:underline">MASTER MARK SHEET FOR THE AWARD OF BACHELOR OF SCIENCE (B.Sc) DEGREE</div>
+      <div style="font-size:12px;margin-top:5px"><b>MODE OF STUDY:</b> FULL-TIME &amp; PART-TIME &nbsp;·&nbsp; <b>SESSION:</b> 2025/2026</div>
+    </div>
+    <div style="display:flex;gap:18px;font-size:11.5px;margin:10px 0 12px;flex-wrap:wrap"><b>Overall Summary:</b>
+      <sc-for list="{{ printClassCounts }}" as="c" hint-placeholder-count="5"><span>{{ c.label }}: <b>{{ c.n2 }}</b></span></sc-for>
+      <span>Total: <b>{{ studentCount }}</b></span>
+    </div>
+    <div style="border:1px solid #333">
+      <div style="display:grid;grid-template-columns:32px 122px 1fr 88px 88px 88px 88px 96px 60px 74px;font-size:10.5px;font-weight:700;background:#efefef;border-bottom:1px solid #333;text-align:center">
+        <div style="padding:4px;border-right:1px solid #333">S/N</div><div style="padding:4px;border-right:1px solid #333">MAT. NO.</div><div style="padding:4px;border-right:1px solid #333;text-align:left">NAME</div><div style="padding:4px;border-right:1px solid #333">YEAR I<br>QP / CU</div><div style="padding:4px;border-right:1px solid #333">YEAR II<br>QP / CU</div><div style="padding:4px;border-right:1px solid #333">YEAR III<br>QP / CU</div><div style="padding:4px;border-right:1px solid #333">YEAR IV<br>QP / CU</div><div style="padding:4px;border-right:1px solid #333">TQP / TCU</div><div style="padding:4px;border-right:1px solid #333">CGPA</div><div style="padding:4px">CLASS</div>
+      </div>
+      <sc-for list="{{ printMasterGroups }}" as="g" hint-placeholder-count="2">
+        <div style="font-size:11px;font-weight:700;background:#f4f4f4;border-bottom:1px solid #333;padding:5px 8px;letter-spacing:.5px">{{ g.label }}</div>
+        <sc-for list="{{ g.rows }}" as="m" hint-placeholder-count="8">
+          <div style="display:grid;grid-template-columns:32px 122px 1fr 88px 88px 88px 88px 96px 60px 74px;font-size:10.5px;border-bottom:1px solid #bbb;text-align:center">
+            <div style="padding:4px;border-right:1px solid #bbb">{{ m.sn }}</div><div style="padding:4px;border-right:1px solid #bbb">{{ m.mat }}</div><div style="padding:4px 6px;border-right:1px solid #bbb;text-align:left">{{ m.name }}</div><div style="padding:4px;border-right:1px solid #bbb">{{ m.y1 }}</div><div style="padding:4px;border-right:1px solid #bbb">{{ m.y2 }}</div><div style="padding:4px;border-right:1px solid #bbb">{{ m.y3 }}</div><div style="padding:4px;border-right:1px solid #bbb">{{ m.y4 }}</div><div style="padding:4px;border-right:1px solid #bbb;font-weight:700">{{ m.tot }}</div><div style="padding:4px;border-right:1px solid #bbb;font-weight:700">{{ m.cgpa }}</div><div style="padding:4px;font-weight:700">{{ m.clsShort }}</div>
+          </div>
+        </sc-for>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;margin-top:40px;font-size:11.5px">
+      <div><b>Head of Department:</b><div style="margin-top:26px;border-top:1px dotted #111;padding-top:4px">Name, Sign &amp; Date</div></div>
+      <div><b>Dean of Faculty:</b><div style="margin-top:26px;border-top:1px dotted #111;padding-top:4px">Name, Sign &amp; Date</div></div>
+      <div><b>External Examiner:</b><div style="margin-top:26px;border-top:1px dotted #111;padding-top:4px">Name, Sign &amp; Date</div></div>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ toastOn }}">
+<div data-noprint="" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#17233f;color:#fff;font-size:13px;font-weight:600;border-radius:999px;padding:11px 20px;z-index:80;box-shadow:0 8px 24px rgba(18,32,66,.3);animation:toastin .25s ease">{{ toast }}</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;requireDob&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Result checker&quot;,&quot;description&quot;:&quot;Require date of birth in addition to mat no before showing a result&quot;},&quot;masterSort&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;cgpa&quot;,&quot;matno&quot;],&quot;default&quot;:&quot;cgpa&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Master sheet&quot;,&quot;description&quot;:&quot;Order of students on the master mark sheet&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const courses=[
+      {code:'CSC 401',title:'Algorithms & Complexity Analysis',cu:3,sem:'1'},
+      {code:'CSC 403',title:'Operating Systems II',cu:3,sem:'1'},
+      {code:'CSC 405',title:'Software Engineering',cu:2,sem:'1'},
+      {code:'CSC 407',title:'Artificial Intelligence',cu:3,sem:'1'},
+      {code:'GST 401',title:'Entrepreneurship Studies',cu:2,sem:'1'},
+      {code:'CSC 402',title:'Computer Networks',cu:3,sem:'2'},
+      {code:'CSC 404',title:'Database Design II',cu:3,sem:'2'},
+      {code:'CSC 406',title:'Project Management',cu:2,sem:'2'},
+      {code:'CSC 409',title:'Compiler Construction',cu:3,sem:'2'},
+      {code:'CSC 499',title:'Final Year Project',cu:6,sem:'2'}];
+    const students=[
+      {mat:'U2022/5570001',name:'OKAFOR, Adaeze Chinyere',dob:'14-MAR-2003',so:'Anambra',ms:'Single',mode:'Full time',set:'2022'},
+      {mat:'U2022/5570002',name:'MUSA, Ibrahim Danladi',dob:'02-JUL-2002',so:'Kaduna',ms:'Single',mode:'Full time',set:'2022'},
+      {mat:'U2022/5570003',name:'EZE, Chinedu Victor',dob:'21-NOV-2001',so:'Enugu',ms:'Single',mode:'Full time',set:'2022'},
+      {mat:'U2022/5570004',name:'ADEYEMI, Funmilayo Grace',dob:'09-FEB-2003',so:'Osun',ms:'Single',mode:'Full time',set:'2022'},
+      {mat:'U2022/5570005',name:'NWOSU, Ngozi Patience',dob:'30-APR-2002',so:'Imo',ms:'Married',mode:'Part time',set:'2022'},
+      {mat:'U2022/5570006',name:'BAKARE, Tunde Samuel',dob:'17-AUG-2001',so:'Lagos',ms:'Single',mode:'Full time',set:'2022'},
+      {mat:'U2022/5570007',name:'SULEIMAN, Amina Zainab',dob:'25-DEC-2002',so:'Kano',ms:'Single',mode:'Full time',set:'2022'},
+      {mat:'U2022/5570008',name:'OBI, Emeka Daniel',dob:'11-JAN-2003',so:'Abia',ms:'Single',mode:'Full time',set:'2022'},
+      {mat:'U2022/5570009',name:'JOHNSON, Blessing Ada',dob:'05-JUN-2002',so:'Rivers',ms:'Single',mode:'Part time',set:'2022'},
+      {mat:'U2022/5570010',name:'ABDULLAHI, Yusuf Bello',dob:'19-SEP-2001',so:'Sokoto',ms:'Married',mode:'Full time',set:'2022'},
+      {mat:'U2022/5570011',name:'IGWE, Chiamaka Faith',dob:'27-OCT-2002',so:'Ebonyi',ms:'Single',mode:'Full time',set:'2022'},
+      {mat:'U2022/5570012',name:'OLAWALE, Segun Peter',dob:'03-MAY-2003',so:'Oyo',ms:'Single',mode:'Full time',set:'2022'},
+      {mat:'U2021/5570014',name:'PETERSIDE, Tamuno Boma',dob:'12-JUL-2000',so:'Rivers',ms:'Married',mode:'Part time',set:'2021'},
+      {mat:'U2021/5570021',name:'GARBA, Halima Sadiya',dob:'23-FEB-2001',so:'Katsina',ms:'Single',mode:'Part time',set:'2021'},
+      {mat:'U2021/5570033',name:'ONUOHA, Kelechi Prince',dob:'15-OCT-1999',so:'Abia',ms:'Single',mode:'Part time',set:'2021'}];
+    const lecturers=[
+      {name:'Dr. Aisha Balogun',role:'Lecturer',courses:['CSC 401','CSC 409']},
+      {name:'Prof. Kelechi Nnamdi',role:'HoD',courses:['CSC 403','CSC 499']},
+      {name:'Dr. Femi Oyelaran',role:'Exam Officer',courses:['CSC 405','GST 401']},
+      {name:'Dr. Musa Danjuma',role:'Lecturer',courses:['CSC 407','CSC 404']}];
+    this.bulk={
+      students:[
+        {mat:'U2022/5570013',name:'CHUKWU, Somtochukwu Henry',dob:'07-MAR-2003',so:'Ebonyi',ms:'Single',mode:'Full time',set:'2022'},
+        {mat:'U2022/5570014',name:'LAWAL, Kafayat Omowunmi',dob:'29-JUN-2002',so:'Kwara',ms:'Single',mode:'Full time',set:'2022'},
+        {mat:'U2022/5570015',name:'DIMKPA, Ibinabo George',dob:'16-APR-2003',so:'Bayelsa',ms:'Single',mode:'Full time',set:'2022'}],
+      lecturers:[
+        {name:'Dr. Ngozi Okereke',role:'Lecturer',courses:['CSC 402']},
+        {name:'Mr. Sadiq Abubakar',role:'Lecturer',courses:['CSC 406']}],
+      courses:[
+        {code:'CSC 411',title:'Net-Centric Computing',cu:2,sem:'1'},
+        {code:'CSC 408',title:'Human-Computer Interaction',cu:2,sem:'2'}]};
+    let scores={'1':{},'2':{}};
+    students.forEach((s,i)=>{['1','2'].forEach((sem,k)=>{scores[sem][s.mat]={};courses.filter(c=>c.sem===sem).forEach((c,j)=>{scores[sem][s.mat][c.code]={ca:12+((i*7+j*13+k*5)%19),exam:22+((i*11+j*17+k*9)%49)};});});});
+    this.state={route:'landing',sem:'1',matQ:'',dobQ:'',err:'',viewMat:null,from:'home',course:'CSC 401',scores,students,lecturers,courses,toast:'',print:null,search:'',tab:'S',up:0,upType:'scores',upAdded:0,upSkipped:0,msSet:'2022',ncCode:'',ncTitle:'',ncCu:'3',ncSem:'1',onbName:'',onbMat:'',onbDob:'',onbSo:'',onbMs:'Single',onbMode:'Full time',onbErr:'',newLect:'',user:null};
+  }
+  g(t){return t>=70?{g:'A',p:5}:t>=60?{g:'B',p:4}:t>=50?{g:'C',p:3}:t>=45?{g:'D',p:2}:t>=40?{g:'E',p:1}:{g:'F',p:0};}
+  gc(g){return ({A:'#0a7d4f',B:'#15697c',C:'#22407e',D:'#8a5b00',E:'#a34c0a',F:'#b3261e'})[g];}
+  pc(g){return g==='F'?'#b3261e':'#111';}
+  cls(c){return c>=4.5?'First Class':c>=3.5?'2nd Class Upper':c>=2.4?'2nd Class Lower':c>=1.5?'3rd Class':c>=1?'Pass':'Fail';}
+  clsShort(c){return c>=4.5?'1st':c>=3.5?'2:1':c>=2.4?'2:2':c>=1.5?'3rd':c>=1?'Pass':'Fail';}
+  semCourses(sem){return this.state.courses.filter(c=>c.sem===sem);}
+  rows(mat,sem){return this.semCourses(sem).map(c=>{const e=(this.state.scores[sem][mat]||{})[c.code]||{ca:0,exam:0};const t=e.ca+e.exam;const gr=this.g(t);return {code:c.code,title:c.title,titleU:c.title.toUpperCase(),cu:c.cu,ca:e.ca,exam:e.exam,total:t,grade:gr.g,gp:gr.p,qp:gr.p*c.cu,color:this.gc(gr.g),pcolor:this.pc(gr.g)};});}
+  sums(rows){const tcu=rows.reduce((a,r)=>a+r.cu,0),tqp=rows.reduce((a,r)=>a+r.qp,0);return {tcu,tqp,gpa:tcu?(tqp/tcu).toFixed(2):'0.00'};}
+  yr(i,y){const cu=[40,38,36][y];const qp=Math.round(cu*(2.1+((i*13+y*29)%28)/10));return {cu,qp};}
+  fin(mat,i){const r1=this.sums(this.rows(mat,'1')),r2=this.sums(this.rows(mat,'2'));const y4={qp:r1.tqp+r2.tqp,cu:r1.tcu+r2.tcu};let tqp=y4.qp,tcu=y4.cu;const yrs=[0,1,2].map(y=>this.yr(i,y));yrs.forEach(x=>{tqp+=x.qp;tcu+=x.cu;});return {yrs,y4,tqp,tcu,cgpa:tcu?tqp/tcu:0};}
+  fill(scores,students,courses){const sc=JSON.parse(JSON.stringify(scores));['1','2'].forEach(sem=>{students.forEach(st=>{if(!sc[sem][st.mat])sc[sem][st.mat]={};courses.filter(c=>c.sem===sem).forEach(c=>{if(!sc[sem][st.mat][c.code])sc[sem][st.mat][c.code]={ca:0,exam:0};});});});return sc;}
+  msg(m){this.setState({toast:m});clearTimeout(this._t);this._t=setTimeout(()=>this.setState({toast:''}),2400);}
+  setScore(mat,f,v,cap){const n=Math.max(0,Math.min(cap,parseInt(v,10)||0));this.setState(s=>{const sc=JSON.parse(JSON.stringify(s.scores));const course=s.courses.find(c=>c.code===s.course);sc[course.sem][mat][s.course][f]=n;return {scores:sc};});}
+  renderVals(){
+    const s=this.state;
+    const requireDob=this.props.requireDob??true;
+    const sortBy=this.props.masterSort??'cgpa';
+    const active={bd:'#22407e',bg:'#22407e',fg:'#fff'},idle={bd:'#d5dbe8',bg:'#fff',fg:'#44506e'};
+    const p1=s.sem==='1'?active:idle,p2=s.sem==='2'?active:idle;
+    const student=s.viewMat?s.students.find(x=>x.mat===s.viewMat):null;
+    const slipRows1=student?this.rows(student.mat,'1'):[],slipRows2=student?this.rows(student.mat,'2'):[];
+    const s1=student?this.sums(slipRows1):{},s2=student?this.sums(slipRows2):{};
+    const cgpa=student?(((s1.tqp+s2.tqp)/((s1.tcu+s2.tcu)||1))).toFixed(2):'';
+    const resultRows=s.sem==='1'?slipRows1:slipRows2;
+    const semSum=s.sem==='1'?s1:s2;
+    const course=s.courses.find(c=>c.code===s.course)||s.courses[0];
+    const entrySemName=course.sem==='1'?'First':'Second';
+    const entryRows=s.students.map((st,i)=>{const e=(s.scores[course.sem][st.mat]||{})[course.code]||{ca:0,exam:0};const t=e.ca+e.exam;const gr=this.g(t);return {i:i+1,mat:st.mat,name:st.name,ca:e.ca,exam:e.exam,total:t,grade:gr.g,color:this.gc(gr.g),pcolor:this.pc(gr.g),onCa:ev=>this.setScore(st.mat,'ca',ev.target.value,30),onExam:ev=>this.setScore(st.mat,'exam',ev.target.value,70)};});
+    const lect=(s.user&&s.user.lect)||s.lecturers[0];
+    const lectCourses=s.courses.filter(c=>lect.courses.includes(c.code)&&c.sem===s.sem).map(c=>({code:c.code,title:c.title,cu:c.cu,n:s.students.length,open:()=>this.setState({route:'entry',course:c.code})}));
+    const q=s.search.toLowerCase();
+    const studentList=s.students.filter(st=>!q||st.name.toLowerCase().includes(q)||st.mat.toLowerCase().includes(q)).map(st=>({mat:st.mat,name:st.name,mode:st.mode,so:st.so,set:st.set,view:()=>this.setState({viewMat:st.mat,route:'result',from:'admin'})}));
+    const lectNames=c=>{const ls=s.lecturers.filter(l=>l.courses.includes(c.code)).map(l=>l.name);return ls.length?ls.join(', '):'Unassigned';};
+    const courseRows1=this.semCourses('1').map(c=>({code:c.code,title:c.title,cu:c.cu,lect:lectNames(c)}));
+    const courseRows2=this.semCourses('2').map(c=>({code:c.code,title:c.title,cu:c.cu,lect:lectNames(c)}));
+    const s1CuTotal=courseRows1.reduce((a,c)=>a+c.cu,0),s2CuTotal=courseRows2.reduce((a,c)=>a+c.cu,0);
+    const masterAll=s.students.map((st,i)=>{const f=this.fin(st.mat,i);return {mat:st.mat,name:st.name,set:st.set,y1:f.yrs[0].qp+' / '+f.yrs[0].cu,y2:f.yrs[1].qp+' / '+f.yrs[1].cu,y3:f.yrs[2].qp+' / '+f.yrs[2].cu,y4:f.y4.qp+' / '+f.y4.cu,tot:f.tqp+' / '+f.tcu,cgpa:f.cgpa.toFixed(2),cgn:f.cgpa,cls:this.cls(f.cgpa),clsShort:this.clsShort(f.cgpa)};});
+    const bySort=sortBy==='matno'?(a,b)=>a.mat<b.mat?-1:1:(a,b)=>b.cgn-a.cgn;
+    const sets=[...new Set(s.students.map(st=>st.set))].sort();
+    const msSet=sets.includes(s.msSet)?s.msSet:sets[sets.length-1];
+    const setChips=sets.map(x=>{const on=x===msSet;return {label:x+' SET',bd:on?'#22407e':'#d5dbe8',bg:on?'#22407e':'#fff',fg:on?'#fff':'#44506e',pick:()=>this.setState({msSet:x})};});
+    const masterSel=[...masterAll.filter(m=>m.set===msSet)].sort(bySort);
+    const masterRows=masterSel.map((m,i)=>Object.assign({sn:i+1},m));
+    const labels=['First Class','2nd Class Upper','2nd Class Lower','3rd Class','Pass'];
+    const counts=list=>labels.map(l=>{const n=list.filter(m=>m.cls===l).length;return {label:l,n,n2:String(n).padStart(2,'0')};});
+    const classCounts=counts(masterSel);
+    const printClassCounts=counts(masterAll);
+    const distColors={'First Class':'#0a7d4f','2nd Class Upper':'#15697c','2nd Class Lower':'#22407e','3rd Class':'#8a5b00','Pass':'#a34c0a'};
+    const classDist=classCounts.filter(c=>c.n>0).map(c=>({n:c.n,color:distColors[c.label]}));
+    const printMasterGroups=sets.map(x=>({label:x+' SET',rows:[...masterAll.filter(m=>m.set===x)].sort(bySort).map((m,i)=>Object.assign({sn:i+1},m))}));
+    const lecturerRows=s.lecturers.map((l,li)=>({name:l.name,role:l.role,chips:s.courses.map(c=>{const on=l.courses.includes(c.code);return {code:c.code,bd:on?'#22407e':'#d5dbe8',bg:on?'#22407e':'#fff',fg:on?'#fff':'#66708a',toggle:()=>{const ls=this.state.lecturers.map((x,xi)=>xi!==li?x:Object.assign({},x,{courses:on?x.courses.filter(cc=>cc!==c.code):[...x.courses,c.code]}));this.setState({lecturers:ls});this.msg(on?c.code+' removed from '+l.name:c.code+' assigned to '+l.name);}};})}));
+    const nav=(route,extra)=>this.setState(Object.assign({route},extra||{}));
+    const tabC=t=>s.tab===t?'#22407e':'#8c95ab',tabB=t=>s.tab===t?'#22407e':'transparent';
+    const printTitles={slip:"Statement of Student's Academic Results",sheet:'Course Score Sheet — '+course.code,master:'Master Mark Sheet — all sets'};
+    const upConf={
+      scores:{label:'Semester scores',title:'Upload soft-copy results',hint:'.xlsx or .csv · '+(s.sem==='1'?'First':'Second')+' semester, 2025/2026',file:'results_2025_2026_sem'+s.sem+'.xlsx',det:s.students.length+' rows detected · '+this.semCourses(s.sem).length+' course columns',map:['A → Mat No','B → Name','C+ → CA / Exam per course'],btn:'Process results'},
+      students:{label:'Students',title:'Bulk upload students',hint:'.xlsx or .csv · one row per student with full bio-data',file:'students_biodata_2022set.xlsx',det:this.bulk.students.length+' rows detected · 6 columns',map:['A → Mat No','B → Full name','C → Date of birth','D → State of origin','E → Marital status','F → Mode of study'],btn:'Onboard students'},
+      lecturers:{label:'Lecturers',title:'Bulk upload lecturers',hint:'.xlsx or .csv · course codes may be listed for auto-assignment',file:'lecturers_dept_csc.xlsx',det:this.bulk.lecturers.length+' rows detected · 3 columns',map:['A → Full name','B → Role','C → Course codes (comma-separated)'],btn:'Add lecturers'},
+      courses:{label:'Courses',title:'Bulk upload courses',hint:'.xlsx or .csv · codes, titles and credit units',file:'courses_400L.xlsx',det:this.bulk.courses.length+' rows detected · 4 columns',map:['A → Course code','B → Title','C → Credit units','D → Semester'],btn:'Add courses'}};
+    const uc=upConf[s.upType];
+    const upTypeChips=['students','lecturers','courses','scores'].map(t=>{const on=s.upType===t;return {label:upConf[t].label,bd:on?'#22407e':'#d5dbe8',bg:on?'#22407e':'#fff',fg:on?'#fff':'#66708a',pick:()=>this.setState({upType:t,up:0})};});
+    const doneMsgs={
+      scores:s.students.length+' individual result statements prepared for the '+(s.sem==='1'?'First':'Second')+' semester, 2025/2026. The master mark sheet has been updated.',
+      students:s.upAdded+' students onboarded with their bio-data.'+(s.upSkipped?' '+s.upSkipped+' duplicate mat numbers were skipped.':'')+' They now appear in the student list and score sheets.',
+      lecturers:s.upAdded+' lecturers added'+(s.upSkipped?' ('+s.upSkipped+' duplicates skipped)':'')+'. Courses listed in the file were assigned automatically.',
+      courses:s.upAdded+' courses added with their credit units'+(s.upSkipped?' ('+s.upSkipped+' duplicates skipped)':'')+'. They are now available for allocation and score entry.'};
+    const goLabels={students:'View student list',lecturers:'View lecturers',courses:'View courses'};
+    const goTabs={students:'S',lecturers:'L',courses:'C'};
+    return {
+      isLanding:s.route==='landing',isHome:s.route==='home',isResult:s.route==='result',isLogin:s.route==='login',isLect:s.route==='lect',isEntry:s.route==='entry',isAdmin:s.route==='admin',isOnboard:s.route==='onboard',
+      requireDob,matQ:s.matQ,dobQ:s.dobQ,err:s.err,hasErr:!!s.err,
+      onMatQ:e=>this.setState({matQ:e.target.value}),onDobQ:e=>this.setState({dobQ:e.target.value}),
+      check:()=>{const m=s.matQ.trim().toUpperCase();if(!m){this.setState({err:'Please enter your matriculation number.'});return;}const st=this.state.students.find(x=>x.mat.toUpperCase()===m);if(!st){this.setState({err:'No student found with that matriculation number. Check and try again.'});return;}if(requireDob&&!this.state.dobQ.trim()){this.setState({err:'Please enter your date of birth to confirm your identity.'});return;}nav('result',{viewMat:st.mat,err:'',from:'home'});},
+      sem1:()=>this.setState({sem:'1'}),sem2:()=>this.setState({sem:'2'}),
+      sem1Bd:p1.bd,sem1Bg:p1.bg,sem1Fg:p1.fg,sem2Bd:p2.bd,sem2Bg:p2.bg,sem2Fg:p2.fg,
+      sem:s.sem,semName:s.sem==='1'?'First':'Second',semNameU:s.sem==='1'?'FIRST':'SECOND',
+      entrySemName,entrySemNameU:entrySemName.toUpperCase(),
+      goHome:()=>nav('home',{err:''}),goLogin:()=>nav('login'),goCheck:()=>nav('home',{err:''}),goLanding:()=>nav('landing'),
+      loginLect:()=>nav('lect',{user:{name:s.lecturers[0].name,role:'Lecturer',lect:s.lecturers[0]}}),
+      loginEO:()=>nav('admin',{user:{name:s.lecturers[2].name,role:'Exam Officer'}}),
+      loginHod:()=>nav('admin',{user:{name:s.lecturers[1].name,role:'Head of Department'}}),
+      logout:()=>nav('landing',{user:null}),
+      userName:s.user?s.user.name:'',userNameU:s.user?s.user.name.toUpperCase():'',userRole:s.user?s.user.role:'',
+      backResult:()=>nav(s.from==='admin'?'admin':'home'),backEntry:()=>nav('lect'),backAdmin:()=>nav('admin'),
+      stName:student?student.name:'',stMat:student?student.mat:'',stMode:student?student.mode:'',stSo:student?student.so:'',stDob:student?student.dob:'',stSet:student?student.set:'',stSoU:student?student.so.toUpperCase():'',stModeU:student?student.mode.toUpperCase():'',stMsU:student?student.ms.toUpperCase():'',
+      resultRows,semTcu:semSum.tcu,semGpa:semSum.gpa,cgpa,
+      slipRows1,slipRows2,s1tcu:s1.tcu,s1tqp:s1.tqp,s1gpa:s1.gpa,s2tcu:s2.tcu,s2tqp:s2.tqp,s2gpa:s2.gpa,
+      lectCourses,lectNoCourses:lectCourses.length===0,courseCode:course.code,courseTitle:course.title,courseTitleU:course.title.toUpperCase(),courseCu:course.cu,
+      entryRows,saveScores:()=>this.msg('Scores saved for '+course.code),
+      printSlip:()=>this.setState({print:'slip'}),printSheet:()=>this.setState({print:'sheet'}),printMaster:()=>this.setState({print:'master'}),
+      closePrint:()=>this.setState({print:null}),doPrint:()=>window.print(),
+      printing:!!s.print,pSlip:s.print==='slip',pSheet:s.print==='sheet',pMaster:s.print==='master',
+      printTitle:s.print?printTitles[s.print]:'',printHint:s.print==='master'?'Tip: choose Landscape in the print dialog':'A4 portrait',
+      tabS:s.tab==='S',tabL:s.tab==='L',tabC:s.tab==='C',tabU:s.tab==='U',tabM:s.tab==='M',
+      tabStudents:()=>this.setState({tab:'S'}),tabLects:()=>this.setState({tab:'L'}),tabCourses:()=>this.setState({tab:'C'}),tabUpload:()=>this.setState({tab:'U'}),tabMaster:()=>this.setState({tab:'M'}),
+      tabSC:tabC('S'),tabLC:tabC('L'),tabCC:tabC('C'),tabUC:tabC('U'),tabMC:tabC('M'),tabSB:tabB('S'),tabLB:tabB('L'),tabCB:tabB('C'),tabUB:tabB('U'),tabMB:tabB('M'),
+      search:s.search,onSearch:e=>this.setState({search:e.target.value}),studentList,studentCount:s.students.length,
+      goOnboard:()=>nav('onboard',{onbErr:''}),
+      goBulkStudents:()=>this.setState({tab:'U',upType:'students',up:0}),
+      goBulkLecturers:()=>this.setState({tab:'U',upType:'lecturers',up:0}),
+      goBulkCourses:()=>this.setState({tab:'U',upType:'courses',up:0}),
+      onbName:s.onbName,onbMat:s.onbMat,onbDob:s.onbDob,onbSo:s.onbSo,onbMs:s.onbMs,onbMode:s.onbMode,onbErr:s.onbErr,hasOnbErr:!!s.onbErr,
+      onOnbName:e=>this.setState({onbName:e.target.value}),onOnbMat:e=>this.setState({onbMat:e.target.value}),onOnbDob:e=>this.setState({onbDob:e.target.value}),onOnbSo:e=>this.setState({onbSo:e.target.value}),onOnbMs:e=>this.setState({onbMs:e.target.value}),onOnbMode:e=>this.setState({onbMode:e.target.value}),
+      submitOnboard:()=>{const st=this.state;if(!st.onbName.trim()||!st.onbMat.trim()){this.setState({onbErr:'Full name and matriculation number are required.'});return;}if(st.students.some(x=>x.mat.toUpperCase()===st.onbMat.trim().toUpperCase())){this.setState({onbErr:'A student with that matriculation number already exists.'});return;}const mat=st.onbMat.trim().toUpperCase();const setM=mat.match(/U(\d{4})/);const ns={mat,name:st.onbName.trim(),dob:st.onbDob.trim()||'—',so:st.onbSo.trim()||'—',ms:st.onbMs,mode:st.onbMode,set:setM?setM[1]:'2022'};const students=[...st.students,ns];this.setState({students,scores:this.fill(st.scores,students,st.courses),route:'admin',onbName:'',onbMat:'',onbDob:'',onbSo:'',onbErr:''});this.msg(ns.name.split(',')[0]+' onboarded successfully');},
+      lecturerRows,newLect:s.newLect,onNewLect:e=>this.setState({newLect:e.target.value}),
+      addLect:()=>{const n=this.state.newLect.trim();if(!n){this.msg('Enter the lecturer\'s name first');return;}this.setState({lecturers:[...this.state.lecturers,{name:n,role:'Lecturer',courses:[]}],newLect:''});this.msg(n+' added');},
+      courseRows1,courseRows2,s1CuTotal,s2CuTotal,
+      ncCode:s.ncCode,ncTitle:s.ncTitle,ncCu:s.ncCu,ncSem:s.ncSem,
+      onNcCode:e=>this.setState({ncCode:e.target.value}),onNcTitle:e=>this.setState({ncTitle:e.target.value}),onNcCu:e=>this.setState({ncCu:e.target.value}),onNcSem:e=>this.setState({ncSem:e.target.value}),
+      addCourse:()=>{const st=this.state;const code=st.ncCode.trim().toUpperCase(),title=st.ncTitle.trim();if(!code||!title){this.msg('Enter the course code and title first');return;}if(st.courses.some(c=>c.code===code)){this.msg(code+' already exists');return;}const courses=[...st.courses,{code,title,cu:parseInt(st.ncCu,10),sem:st.ncSem}];this.setState({courses,scores:this.fill(st.scores,st.students,courses),ncCode:'',ncTitle:''});this.msg(code+' added — '+st.ncCu+' credit units');},
+      upTypeChips,up0:s.up===0,up1:s.up===1,up2:s.up===2,up3:s.up===3,
+      courseCount:s.courses.length,lectCount:s.lecturers.length,classDist,
+      upTitle:uc.title,upHint:uc.hint,upFile:uc.file,upDet:uc.det,upMap:uc.map,upBtn:uc.btn,
+      upIsScores:s.upType==='scores',upNotScores:s.upType!=='scores',
+      upDoneTitle:s.upType==='scores'?'Results processed':'Upload complete',
+      upDoneMsg:doneMsgs[s.upType],
+      upGoLabel:goLabels[s.upType]||'',upGoTab:()=>this.setState({tab:goTabs[s.upType]||'S'}),
+      upPick:()=>this.setState({up:1}),
+      upProcess:()=>{this.setState({up:3});clearTimeout(this._up);this._up=setTimeout(()=>{const st=this.state;let added=0,skipped=0,extra={};
+        if(st.upType==='students'){const cur=st.students.map(x=>x.mat);const ns=this.bulk.students.filter(b=>!cur.includes(b.mat));added=ns.length;skipped=this.bulk.students.length-added;const students=[...st.students,...ns];extra={students,scores:this.fill(st.scores,students,st.courses)};}
+        else if(st.upType==='lecturers'){const cur=st.lecturers.map(x=>x.name);const nl=this.bulk.lecturers.filter(b=>!cur.includes(b.name));added=nl.length;skipped=this.bulk.lecturers.length-added;extra={lecturers:[...st.lecturers,...nl]};}
+        else if(st.upType==='courses'){const cur=st.courses.map(x=>x.code);const nc=this.bulk.courses.filter(b=>!cur.includes(b.code));added=nc.length;skipped=this.bulk.courses.length-added;const courses=[...st.courses,...nc];extra={courses,scores:this.fill(st.scores,st.students,courses)};}
+        else {added=st.students.length;}
+        this.setState(Object.assign({up:2,upAdded:added,upSkipped:skipped},extra));
+        this.msg(st.upType==='scores'?added+' result statements prepared':added+' records added');},1100);},
+      upReset:()=>this.setState({up:0}),
+      upViewSlip:()=>this.setState({viewMat:s.students[0].mat,print:'slip'}),
+      masterRows,classCounts,printClassCounts,printMasterGroups,setChips,
+      toast:s.toast,toastOn:!!s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
