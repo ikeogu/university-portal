@@ -16,12 +16,7 @@ return new class extends Migration
             $table->foreignUlid('registered_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 
-            // Explicit short name — the auto-generated one
-            // ("course_registrations_student_id_course_id_academic_session_id_unique",
-            // 68 chars) exceeds MySQL's 64-character identifier limit. Passes on
-            // SQLite (used locally), which doesn't enforce that limit, so this
-            // only surfaces against real MySQL.
-            $table->unique(['student_id', 'course_id', 'academic_session_id'], 'course_registrations_unique');
+            $table->unique(['student_id', 'course_id', 'academic_session_id'], 'course_reg_unique');
         });
     }
 
