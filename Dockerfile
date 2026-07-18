@@ -45,7 +45,14 @@ RUN apk add --no-cache \
     libxml2-dev \
     zip
 
-# Install PHP extensions
+# Install PHP extensions — dom/fileinfo/simplexml/xml/xmlreader/xmlwriter/
+# iconv are all required by phpoffice/phpspreadsheet (via maatwebsite/excel,
+# used throughout this app's import/upload system) per composer.lock, but
+# aren't part of php:8.4-fpm-alpine's default build. Laravel boots every
+# registered package's service provider on every request regardless of
+# route, so a missing one here breaks even /up, not just spreadsheet code
+# paths — confirmed by cross-checking composer.lock's declared ext-*
+# requirements against this list, not guessed from the symptom alone.
 RUN docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
@@ -56,7 +63,14 @@ RUN docker-php-ext-configure gd \
         mbstring \
         zip \
         gd \
-        opcache
+        opcache \
+        dom \
+        fileinfo \
+        iconv \
+        simplexml \
+        xml \
+        xmlreader \
+        xmlwriter
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
