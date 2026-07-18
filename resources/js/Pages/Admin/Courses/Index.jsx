@@ -11,13 +11,17 @@ export default function Index({ semesters }) {
         credit_units: '1',
         semester: '1',
         level: '100',
+        category: 'core',
+        elective_group: '',
+        choose_count: '1',
     });
 
     const submit = (e) => {
         e.preventDefault();
         post(route('admin.courses.store'), {
             preserveScroll: true,
-            onSuccess: () => reset('code', 'title'),
+            onSuccess: () =>
+                reset('code', 'title', 'elective_group', 'choose_count'),
         });
     };
 
@@ -27,6 +31,12 @@ export default function Index({ semesters }) {
 
             <div className="flex items-center gap-2">
                 <div className="flex-1 text-[15px] font-bold text-ink">Courses</div>
+                <Link
+                    href={route('admin.electives.index')}
+                    className="flex h-11 items-center whitespace-nowrap rounded-xl border-[1.5px] border-primary px-3 text-[13px] font-bold text-primary hover:bg-tint"
+                >
+                    Electives
+                </Link>
                 <Link
                     href={route('admin.upload.index')}
                     className="flex h-11 items-center whitespace-nowrap rounded-xl border-[1.5px] border-primary px-3 text-[13px] font-bold text-primary hover:bg-tint"
@@ -115,6 +125,59 @@ export default function Index({ semesters }) {
                 </Field>
                 {errors.level && <FieldError message={errors.level} />}
 
+                <Field label="Category" className="mt-3.5">
+                    <select
+                        value={data.category}
+                        onChange={(e) => setData('category', e.target.value)}
+                        className="h-[46px] w-full rounded-xl border-[1.5px] border-border-input bg-input-bg px-2.5 text-sm text-ink"
+                    >
+                        <option value="required">Required</option>
+                        <option value="core">Core</option>
+                        <option value="elective">Elective</option>
+                    </select>
+                </Field>
+                {errors.category && <FieldError message={errors.category} />}
+
+                {data.category === 'elective' && (
+                    <div className="mt-3.5 grid grid-cols-2 gap-2.5">
+                        <Field label="Elective group">
+                            <input
+                                value={data.elective_group}
+                                onChange={(e) =>
+                                    setData('elective_group', e.target.value)
+                                }
+                                placeholder="e.g. Y3S2 Elective"
+                                className="h-[46px] w-full rounded-xl border-[1.5px] border-border-input bg-input-bg px-3.5 text-sm text-ink"
+                            />
+                        </Field>
+
+                        <Field label="Choose how many">
+                            <input
+                                type="number"
+                                min="1"
+                                value={data.choose_count}
+                                onChange={(e) =>
+                                    setData('choose_count', e.target.value)
+                                }
+                                className="h-[46px] w-full rounded-xl border-[1.5px] border-border-input bg-input-bg px-3.5 text-sm text-ink"
+                            />
+                        </Field>
+                    </div>
+                )}
+                {errors.elective_group && (
+                    <FieldError message={errors.elective_group} />
+                )}
+                {errors.choose_count && (
+                    <FieldError message={errors.choose_count} />
+                )}
+                {data.category === 'elective' && (
+                    <div className="mt-1.5 text-[11px] text-faint">
+                        Give every alternative in the same choice (e.g. all
+                        three "choose 1 of 3" options) the identical group
+                        name — that's how the system knows they're linked.
+                    </div>
+                )}
+
                 <button
                     type="submit"
                     disabled={processing}
@@ -150,9 +213,17 @@ function SemesterList({ semester }) {
                             </div>
                             <div className="mt-0.5 truncate text-[11.5px] text-faint">
                                 {course.lecturers}
+                                {course.category === 'Elective' &&
+                                    course.elective_group &&
+                                    ` · ${course.elective_group}`}
                             </div>
                         </div>
                         <div className="flex flex-none items-center gap-2">
+                            {course.category === 'Elective' && (
+                                <span className="rounded-full bg-tint px-2.5 py-1 text-[11px] font-bold text-primary">
+                                    Elective
+                                </span>
+                            )}
                             <span className="rounded-full bg-tint px-2.5 py-1 text-[11px] font-bold text-primary">
                                 {course.credit_units} CU
                             </span>

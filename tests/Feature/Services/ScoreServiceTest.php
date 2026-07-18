@@ -2,10 +2,12 @@
 
 namespace Tests\Feature\Services;
 
+use App\Enums\CourseCategory;
 use App\Enums\ModeOfStudy;
 use App\Enums\Semester;
 use App\Models\AcademicSession;
 use App\Models\Course;
+use App\Models\CourseRegistration;
 use App\Models\Score;
 use App\Models\ScoreAuditLog;
 use App\Models\Student;
@@ -153,5 +155,48 @@ class ScoreServiceTest extends TestCase
         ], $lecturer);
 
         $this->assertSame(0, Score::where('student_id', $stranger->id)->count());
+    }
+
+    public function test_roster_for_an_elective_course_only_includes_registered_students(): void
+    {
+        $session = AcademicSession::create(['name' => '2025/2026', 'is_current' => true]);
+        $course = Course::create([
+            'code' => 'LLA 317.2', 'title' => 'Language and the Law', 'credit_units' => 2,
+            'semester' => Semester::Second, 'level' => 300,
+            'category' => CourseCategory::Elective, 'elective_group' => 'Y3S2 Elective', 'choose_count' => 1,
+        ]);
+
+        $registered = $this->makeStudent('U2022/0001');
+        $this->enroll($registered, $session, 300);
+        CourseRegistration::create([
+            'student_id' => $registered->id, 'course_id' => $course->id, 'academic_session_id' => $session->id,
+        ]);
+
+        $notRegistered = $this->makeStudent('U2022/0002');
+        $this->enroll($notRegistered, $session, 300);
+
+        $roster = (new ScoreService)->rosterFor($course, $session);
+
+        $this->assertCount(1, $roster);
+        $this->assertSame($registered->id, $roster->first()->student_id);
+        $this->assertSame(0, Score::where('student_id', $notRegistered->id)->count());
+    }
+
+    public function test_roster_for_a_core_course_ignores_registrations_and_scores_everyone(): void
+    {
+        $session = AcademicSession::create(['name' => '2025/2026', 'is_current' => true]);
+        $course = Course::create([
+            'code' => 'LLA 100.1', 'title' => 'Linguistics, Language and Communication', 'credit_units' => 3,
+            'semester' => Semester::First, 'level' => 100, 'category' => CourseCategory::Core,
+        ]);
+
+        $student = $this->makeStudent('U2022/0001');
+        $this->enroll($student, $session, 100);
+
+        // No CourseRegistration exists at all — a Core course must not care.
+        $roster = (new ScoreService)->rosterFor($course, $session);
+
+        $this->assertCount(1, $roster);
+        $this->assertSame($student->id, $roster->first()->student_id);
     }
 }

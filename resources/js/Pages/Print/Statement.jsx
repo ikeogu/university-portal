@@ -40,6 +40,9 @@ export default function Statement({ student, session, institution, sem1, sem2, c
                             <b>MATRICULATION NUMBER:</b> {student.mat_no}
                         </div>
                         <div>
+                            <b>GENDER:</b> {student.gender.toUpperCase()}
+                        </div>
+                        <div>
                             <b>STATE OF ORIGIN:</b>{' '}
                             {student.state_of_origin.toUpperCase()}
                         </div>

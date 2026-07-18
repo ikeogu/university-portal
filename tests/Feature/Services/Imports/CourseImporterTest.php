@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Services\Imports;
 
+use App\Enums\CourseCategory;
 use App\Enums\Semester;
 use App\Models\Course;
 use App\Services\Imports\CourseImporter;
@@ -62,5 +63,38 @@ class CourseImporterTest extends TestCase
         ]);
 
         $this->assertSame(100, Course::sole()->level);
+    }
+
+    public function test_defaults_to_core_category_when_category_column_is_missing(): void
+    {
+        (new CourseImporter)->import([
+            ['CSC 411', 'Net-Centric Computing', '2', '1', '400'],
+        ]);
+
+        $this->assertSame(CourseCategory::Core, Course::sole()->category);
+    }
+
+    public function test_imports_an_elective_course_with_its_group_and_choose_count(): void
+    {
+        (new CourseImporter)->import([
+            ['LLA 317.2', 'Language and the Law', '2', '2', '300', 'Elective', 'Y3S2 Elective', '1'],
+        ]);
+
+        $course = Course::sole();
+        $this->assertSame(CourseCategory::Elective, $course->category);
+        $this->assertSame('Y3S2 Elective', $course->elective_group);
+        $this->assertSame(1, $course->choose_count);
+    }
+
+    public function test_elective_group_and_choose_count_are_ignored_for_non_elective_courses(): void
+    {
+        (new CourseImporter)->import([
+            ['CSC 411', 'Net-Centric Computing', '2', '1', '400', 'Core', 'Should be ignored', '2'],
+        ]);
+
+        $course = Course::sole();
+        $this->assertSame(CourseCategory::Core, $course->category);
+        $this->assertNull($course->elective_group);
+        $this->assertNull($course->choose_count);
     }
 }

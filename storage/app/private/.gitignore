@@ -1,2 +1,7 @@
 *
 !.gitignore
+
+# Downloadable bulk-upload templates ship with the app — not user-generated
+# runtime data, so they're tracked in git (unlike everything else here).
+!samples/
+!samples/**

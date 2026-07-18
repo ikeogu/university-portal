@@ -2,6 +2,7 @@
 
 namespace App\Services\Imports;
 
+use App\Enums\CourseCategory;
 use App\Enums\Semester;
 use App\Models\Course;
 use Illuminate\Support\Str;
@@ -9,11 +10,11 @@ use Illuminate\Support\Str;
 class CourseImporter
 {
     /**
-     * Column mapping: A Code, B Title, C Credit units, D Semester, E Level.
-     * The Level column is an addition beyond the README's literal A-D
-     * mapping, matching the same Level field added to the manual "Add a
-     * course" form — the real system supports multiple levels, so every
-     * course must declare one; defaults to 100 if the column is omitted.
+     * Column mapping: A Code, B Title, C Credit units, D Semester, E Level,
+     * F Category (Required/Core/Elective, optional — defaults to Core), G
+     * Elective group, H Choose how many (both optional, only meaningful
+     * when F is Elective; every alternative in the same "choose N of M"
+     * decision must share the identical group label in column G).
      *
      * @param  iterable<int, array<int, mixed>>  $rows
      */
@@ -48,12 +49,19 @@ class CourseImporter
                 ? Semester::Second
                 : Semester::First;
 
+            $category = $this->matchCategory($row[5] ?? null);
+            $electiveGroup = trim((string) ($row[6] ?? ''));
+            $chooseCount = trim((string) ($row[7] ?? ''));
+
             Course::create([
                 'code' => $code,
                 'title' => $title,
                 'credit_units' => (int) ($row[2] ?? 1),
                 'semester' => $semester,
                 'level' => (int) ($row[4] ?? 100),
+                'category' => $category,
+                'elective_group' => $category === CourseCategory::Elective && $electiveGroup !== '' ? $electiveGroup : null,
+                'choose_count' => $category === CourseCategory::Elective && $chooseCount !== '' ? (int) $chooseCount : null,
             ]);
 
             $seen->put($code, true);
@@ -61,5 +69,22 @@ class CourseImporter
         }
 
         return new ImportResult($added, $skipped, $errors);
+    }
+
+    private function matchCategory(mixed $value): CourseCategory
+    {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return CourseCategory::Core;
+        }
+
+        foreach (CourseCategory::cases() as $case) {
+            if (Str::lower($case->label()) === Str::lower($value)) {
+                return $case;
+            }
+        }
+
+        return CourseCategory::Core;
     }
 }

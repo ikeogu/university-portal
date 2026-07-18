@@ -43,6 +43,7 @@ class BioDataController extends Controller
                 'first_name' => $student->first_name,
                 'middle_name' => $student->middle_name,
                 'dob' => $student->dob?->format('Y-m-d'),
+                'gender' => $student->gender?->value,
                 'state_of_origin' => $student->state_of_origin,
                 'marital_status' => $student->marital_status?->value,
                 'mode_of_study' => $student->mode_of_study->value,

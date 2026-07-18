@@ -7,6 +7,7 @@ use App\Enums\Semester;
 use App\Models\AcademicSession;
 use App\Models\Course;
 use App\Models\Score;
+use App\Models\Setting;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -88,6 +89,23 @@ class ResultCheckControllerTest extends TestCase
 
         $response->assertRedirect(route('public.result'));
         $this->assertSame($student->id, session('public_student_id'));
+    }
+
+    public function test_create_only_exposes_a_bio_data_link_when_the_setting_is_open(): void
+    {
+        $this->get(route('public.check'))
+            ->assertInertia(fn ($page) => $page
+                ->component('Public/Check')
+                ->where('bioDataHref', null)
+            );
+
+        Setting::set('bioUpdateOpen', true);
+
+        $this->get(route('public.check'))
+            ->assertInertia(fn ($page) => $page
+                ->component('Public/Check')
+                ->where('bioDataHref', route('public.bio.edit'))
+            );
     }
 
     public function test_result_redirects_to_check_without_a_verified_session(): void

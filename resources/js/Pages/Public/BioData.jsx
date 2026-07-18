@@ -154,6 +154,7 @@ function EditForm({ student }) {
         first_name: student.first_name ?? '',
         middle_name: student.middle_name ?? '',
         dob: student.dob ?? '',
+        gender: student.gender ?? 'male',
         state_of_origin: student.state_of_origin ?? '',
         marital_status: student.marital_status ?? 'single',
         mode_of_study: student.mode_of_study ?? 'full_time',
@@ -276,6 +277,20 @@ function EditForm({ student }) {
                         />
                     </Field>
                     {errors.dob && <FieldError message={errors.dob} />}
+
+                    <Field label="Gender" className="mt-3.5">
+                        <select
+                            value={data.gender}
+                            onChange={(e) =>
+                                setData('gender', e.target.value)
+                            }
+                            className="h-[46px] w-full rounded-xl border-[1.5px] border-border-input bg-input-bg px-2.5 text-sm text-ink"
+                        >
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </Field>
+                    {errors.gender && <FieldError message={errors.gender} />}
 
                     <Field label="State of origin" className="mt-3.5">
                         <input

@@ -179,7 +179,7 @@ class UploadController extends Controller
         return match ($type) {
             'students' => ['A → Mat No', 'B → Full name', 'C → Date of birth', 'D → State of origin', 'E → Marital status', 'F → Mode of study'],
             'lecturers' => ['A → Full name', 'B → Role', 'C → Course codes (comma-separated)', 'D → Email'],
-            'courses' => ['A → Course code', 'B → Title', 'C → Credit units', 'D → Semester', 'E → Level'],
+            'courses' => ['A → Course code', 'B → Title', 'C → Credit units', 'D → Semester', 'E → Level', 'F → Category (optional)', 'G → Elective group (optional)', 'H → Choose how many (optional)'],
             'scores' => $this->scoreColumnMap($request),
         };
     }

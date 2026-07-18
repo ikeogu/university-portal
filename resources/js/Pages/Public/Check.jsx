@@ -1,7 +1,7 @@
 import MobileShell from '@/Layouts/MobileShell';
 import { Head, Link, useForm } from '@inertiajs/react';
 
-export default function Check() {
+export default function Check({ bioDataHref }) {
     const { data, setData, post, processing, errors } = useForm({
         mat_no: '',
         pin: '',
@@ -115,6 +115,18 @@ export default function Check() {
                         Sign in
                     </Link>
                 </div>
+
+                {bioDataHref && (
+                    <div className="mx-[18px] mt-3 text-center text-[12px] font-semibold text-muted">
+                        Just need to update your bio data or photo?{' '}
+                        <Link
+                            href={bioDataHref}
+                            className="text-primary underline-offset-2 hover:underline"
+                        >
+                            Update it here
+                        </Link>
+                    </div>
+                )}
 
                 <div className="mt-auto p-[22px] text-center text-[11px] text-faint2">
                     Unity State University · Faculty of Computing

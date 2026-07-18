@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Enums\CourseCategory;
 use App\Enums\Semester;
 use App\Models\AcademicSession;
 use App\Models\Course;
@@ -114,6 +115,7 @@ class CourseControllerTest extends TestCase
             'credit_units' => '3',
             'semester' => '1',
             'level' => '400',
+            'category' => 'core',
         ]);
 
         $response
@@ -128,6 +130,7 @@ class CourseControllerTest extends TestCase
         $this->assertEquals(3, $course->credit_units);
         $this->assertSame(Semester::First, $course->semester);
         $this->assertEquals(400, $course->level);
+        $this->assertSame(CourseCategory::Core, $course->category);
         $this->assertTrue($course->is_active);
     }
 

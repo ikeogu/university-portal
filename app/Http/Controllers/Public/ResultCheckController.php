@@ -19,7 +19,9 @@ class ResultCheckController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('Public/Check');
+        return Inertia::render('Public/Check', [
+            'bioDataHref' => Setting::get('bioUpdateOpen', false) ? route('public.bio.edit') : null,
+        ]);
     }
 
     public function store(CheckResultRequest $request): RedirectResponse

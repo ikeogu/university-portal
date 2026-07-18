@@ -37,6 +37,8 @@ class CourseController extends Controller
                     'code' => $course->code,
                     'title' => $course->title,
                     'credit_units' => $course->credit_units,
+                    'category' => $course->category->label(),
+                    'elective_group' => $course->elective_group,
                     'lecturers' => $course->allocations->isEmpty()
                         ? 'Unassigned'
                         : $course->allocations->pluck('lecturer.name')->filter()->implode(', '),

@@ -48,6 +48,7 @@ class StatementController extends Controller
                 'mat_no' => $student->mat_no,
                 'photo_url' => $student->photo_url,
                 'dob' => $student->dob?->format('d-M-Y') ?? '—',
+                'gender' => $student->gender?->label() ?? '—',
                 'state_of_origin' => $student->state_of_origin ?? '—',
                 'mode_of_study' => $student->mode_of_study->label(),
                 'marital_status' => $student->marital_status?->label() ?? '—',

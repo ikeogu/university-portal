@@ -4,6 +4,7 @@ namespace App\Services\Academic;
 
 use App\Models\AcademicSession;
 use App\Models\Course;
+use App\Models\CourseRegistration;
 use App\Models\Score;
 use App\Models\ScoreAuditLog;
 use App\Models\StudentEnrollment;
@@ -14,17 +15,33 @@ use Illuminate\Support\Facades\DB;
 class ScoreService
 {
     /**
-     * Ensure every actively-enrolled student at $course->level in $session
-     * has a Score row (creating missing ones, credit units snapshotted from
-     * the course), then return the full roster with students eager-loaded.
+     * Ensure every student who should be scored for $course in $session has
+     * a Score row (creating missing ones, credit units snapshotted from the
+     * course), then return the full roster with students eager-loaded.
+     *
+     * Required/Core courses apply to every actively-enrolled student at
+     * $course->level, same as always. Elective courses instead apply only
+     * to students with a matching CourseRegistration — the Exam Officer
+     * must register a student's choice before it appears here.
      */
     public function rosterFor(Course $course, AcademicSession $session): Collection
     {
-        $studentIds = StudentEnrollment::query()
+        $enrolledStudentIds = StudentEnrollment::query()
             ->where('academic_session_id', $session->id)
             ->where('level', $course->level)
             ->whereHas('student', fn ($query) => $query->where('is_active', true))
             ->pluck('student_id');
+
+        if ($course->isElective()) {
+            $registeredStudentIds = CourseRegistration::query()
+                ->where('course_id', $course->id)
+                ->where('academic_session_id', $session->id)
+                ->pluck('student_id');
+
+            $studentIds = $enrolledStudentIds->intersect($registeredStudentIds)->values();
+        } else {
+            $studentIds = $enrolledStudentIds;
+        }
 
         $existingStudentIds = Score::query()
             ->where('course_id', $course->id)

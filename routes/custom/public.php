@@ -10,6 +10,7 @@ Route::get('/', fn () => Inertia::render('Public/Landing', [
     'institutionName' => Setting::get('institution_name', 'Unity State University'),
     'facultyName' => Setting::get('faculty_name'),
     'departmentName' => Setting::get('department_name', 'Dept. of Computer Science'),
+    'bioDataHref' => Setting::get('bioUpdateOpen', false) ? route('public.bio.edit') : null,
 ]))->name('landing');
 
 Route::middleware('throttle:result-check')->group(function () {

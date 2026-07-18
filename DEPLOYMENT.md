@@ -86,9 +86,15 @@ Migrate, seed settings, and bootstrap the first admin account:
 
 ```bash
 php artisan migrate --force
+php artisan storage:link
 php artisan db:seed --class=Database\\Seeders\\SettingsSeeder --force
 php artisan admin:create-first
 ```
+
+`storage:link` creates the `public/storage` symlink student photos and HoD/Exam Officer
+signatures are served through — without it every photo/signature URL 404s. It's also
+self-healing at runtime now (`AppServiceProvider::boot()` recreates it if missing), but run it
+explicitly here so the first request after deploy doesn't have to.
 
 Set ownership/permissions:
 

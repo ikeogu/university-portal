@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Gender;
 use App\Enums\MaritalStatus;
 use App\Enums\ModeOfStudy;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 #[Fillable([
-    'mat_no', 'entry_year', 'last_name', 'first_name', 'middle_name', 'dob',
+    'mat_no', 'entry_year', 'last_name', 'first_name', 'middle_name', 'dob', 'gender',
     'state_of_origin', 'marital_status', 'mode_of_study', 'photo_path', 'access_pin', 'is_active',
 ])]
 #[Hidden(['access_pin_hash'])]
@@ -42,6 +43,7 @@ class Student extends Model
     {
         return [
             'dob' => 'date',
+            'gender' => Gender::class,
             'marital_status' => MaritalStatus::class,
             'mode_of_study' => ModeOfStudy::class,
             'is_active' => 'boolean',
@@ -105,5 +107,10 @@ class Student extends Model
     public function scores(): HasMany
     {
         return $this->hasMany(Score::class);
+    }
+
+    public function courseRegistrations(): HasMany
+    {
+        return $this->hasMany(CourseRegistration::class);
     }
 }

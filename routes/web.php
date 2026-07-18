@@ -13,6 +13,7 @@ require __DIR__.'/auth.php';
 require __DIR__.'/custom/admin.php';
 require __DIR__.'/custom/admin_lecturers.php';
 require __DIR__.'/custom/admin_courses.php';
+require __DIR__.'/custom/admin_electives.php';
 require __DIR__.'/custom/admin_upload.php';
 require __DIR__.'/custom/admin_master.php';
 require __DIR__.'/custom/admin_settings.php';

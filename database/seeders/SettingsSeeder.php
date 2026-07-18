@@ -16,10 +16,10 @@ class SettingsSeeder extends Seeder
             'bioUpdateOpen' => false,
             'masterSort' => 'cgpa',
             'programme_duration_years' => 4,
-            'institution_name' => 'Unity State University',
-            'faculty_name' => 'Faculty of Computing',
-            'department_name' => 'Department of Computer Science',
-            'programme_name' => 'B.Sc Computer Science',
+            'institution_name' => 'University of Port Harcourt',
+            'faculty_name' => 'Faculty of Humanities',
+            'department_name' => 'Department of Eglish',
+            'programme_name' => 'Bachelor of Arts in English',
         ];
 
         foreach ($defaults as $key => $value) {

@@ -1,0 +1,14 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+# Runs once, before the new version takes traffic — safe to run on every
+# deploy since Laravel migrations are idempotent (tracked in the migrations
+# table). Settings seeding and first-admin bootstrap are deliberately NOT
+# here — those are one-time steps, run manually after the first deploy only
+# (see RAILWAY.md).
+preDeployCommand = "php artisan migrate --force"
+healthcheckPath = "/up"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

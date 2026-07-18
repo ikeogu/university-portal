@@ -73,6 +73,7 @@ export default function Show({
                     </div>
                     <div className="mt-3 flex flex-wrap gap-1.5">
                         <Chip>{student.mode_of_study}</Chip>
+                        <Chip>{student.gender ?? '—'}</Chip>
                         <Chip>{student.state_of_origin ?? '—'} State</Chip>
                         <Chip>
                             {student.entry_year} set · {selectedLevel} Level

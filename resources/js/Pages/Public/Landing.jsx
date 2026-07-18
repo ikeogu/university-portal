@@ -25,7 +25,12 @@ const STEPS = [
     { icon: '✓', label: 'Graduate' },
 ];
 
-export default function Landing({ institutionName, facultyName, departmentName }) {
+export default function Landing({
+    institutionName,
+    facultyName,
+    departmentName,
+    bioDataHref,
+}) {
     const subtitle = facultyName ? `${facultyName} · ${departmentName}` : departmentName;
 
     return (
@@ -131,7 +136,15 @@ export default function Landing({ institutionName, facultyName, departmentName }
                     </div>
                 </div>
 
-                <div className="mt-10 text-center lg:mt-14">
+                <div className="mt-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-center lg:mt-14">
+                    {bioDataHref && (
+                        <Link
+                            href={bioDataHref}
+                            className="text-[12.5px] font-semibold text-muted underline-offset-2 hover:text-primary hover:underline"
+                        >
+                            Update my bio data &amp; photo →
+                        </Link>
+                    )}
                     <Link
                         href={route('login')}
                         className="text-[12.5px] font-semibold text-muted underline-offset-2 hover:text-primary hover:underline"

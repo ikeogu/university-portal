@@ -15,6 +15,9 @@ return new class extends Migration
             $table->unsignedTinyInteger('credit_units');
             $table->unsignedTinyInteger('semester');
             $table->unsignedSmallInteger('level');
+            $table->string('category')->default('core');
+            $table->string('elective_group')->nullable();
+            $table->unsignedTinyInteger('choose_count')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
