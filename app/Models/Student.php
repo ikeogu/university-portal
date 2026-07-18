@@ -57,7 +57,7 @@ class Student extends Model
 
     protected function photoUrl(): Attribute
     {
-        return Attribute::get(fn () => $this->photo_path ? Storage::disk('public')->url($this->photo_path) : null);
+        return Attribute::get(fn () => $this->photo_path ? Storage::url($this->photo_path) : null);
     }
 
     /**
