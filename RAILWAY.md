@@ -9,15 +9,21 @@ no Dockerfile needed, no server to patch yourself.
 - **Web service** — this repo, deployed from GitHub (`ikeogu/university-portal`). Builder pinned
   to Nixpacks in `railway.toml` (not the newer Railpack, which is still beta) so PHP version and
   extensions come from `composer.json` reliably.
-- **Frontend assets are pre-built and committed, not built by Railway.** `nixpacks.toml` replaces
-  Nixpacks' default build phase (which is npm-build-only when a `package.json` is present —
-  confirmed against Nixpacks' own docs, so this can't accidentally skip `composer install`, which
-  lives in the separate install phase) with a no-op. `public/build/` is tracked in git instead of
-  gitignored. This sidesteps Node-version drift between this machine and Railway's build container
-  entirely — see [[cgpa-stack-decision]] memory for the Node 18 vs. `vite`/`rolldown`'s required
-  `^20.19.0 || >=22.12.0` issue this replaced. **Run `npm run build` locally and commit
-  `public/build/` before every push that touches `resources/js` or `resources/css`** — Railway
-  will silently keep serving whatever was last committed otherwise, not a fresh build.
+- **Frontend assets are pre-built and committed, not built by Railway — and Node is not installed
+  in the build container at all.** `nixpacks.toml` replaces Nixpacks' `setup` and `install` phases
+  (the PHP provider always adds Node/npm nix packages and an `npm install` step whenever a
+  `package.json` is present, with no config flag to opt out of that) with copies of the
+  auto-detected plan minus the Node/npm pieces, and replaces `build` with a no-op — confirmed
+  against Nixpacks' own docs/source so this can't accidentally skip `composer install`. `public/build/`
+  is tracked in git instead of gitignored. This sidesteps Node-version drift between this machine
+  and Railway's build container entirely — see [[cgpa-stack-decision]] memory for the Node 18 vs.
+  `vite`/`rolldown`'s required `^20.19.0 || >=22.12.0` issue, and the later `nodejs_24`-not-found
+  nixpkgs failure, both of which this replaced. **Run `npm run build` locally and commit
+  `public/build/` before every push that touches `resources/js` or `resources/css`** — Railway has
+  no Node to build it and will silently keep serving whatever was last committed otherwise.
+  If composer.json's `php` constraint ever moves to a new major/minor, bump the hardcoded `php84`
+  in `nixpacks.toml`'s `[phases.setup]` to match — overriding the phase means losing the provider's
+  own version auto-detection.
 - **MySQL plugin** — Railway-managed, matches the stack decision already made for the VPS path.
   Postgres would work too (nothing in this codebase is MySQL-specific), but there's no reason to
   redecide that now.
@@ -88,8 +94,9 @@ there's a chicken-and-egg problem generating it via a command that itself needs 
 Push to `main` (or click `Deploy` if Railway hasn't auto-deployed from the initial connection).
 Railway will:
 
-1. Build via Nixpacks (`composer install --no-dev`, autoloader dump). The frontend build step is
-   a no-op per `nixpacks.toml` — it uses whatever's already committed in `public/build/`.
+1. Build via Nixpacks (`composer install --no-dev --optimize-autoloader`, per `nixpacks.toml`).
+   The frontend build step is a no-op — it uses whatever's already committed in `public/build/`,
+   since Node isn't installed in this build container at all.
 2. Run the **pre-deploy command** from `railway.toml` — `php artisan migrate --force` — in a
    separate container, before the new version takes traffic. If it fails, the deploy stops and
    the previous version keeps serving, so a bad migration can't take the site down.

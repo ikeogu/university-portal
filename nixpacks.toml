@@ -1,14 +1,42 @@
 # Frontend assets (public/build/) are built locally and committed to the
-# repo rather than built by Railway — sidesteps needing Node/Vite/Rolldown
-# to work correctly inside the build container at all. Nixpacks' PHP
-# provider still runs `composer install` in the separate "install" phase
-# (untouched by this file) and Node/npm install in that same phase; this
-# only replaces the "build" phase, which is npm-build-only when a
-# package.json is present — confirmed via Nixpacks' own docs before adding
-# this, since overriding the wrong phase could have silently dropped the
-# composer install step instead.
+# repo rather than built by Railway — Node is not installed in the build
+# container at all, sidestepping Node-version drift between this machine
+# and Railway entirely (see [[cgpa-stack-decision]] memory for the Node 18
+# vs. vite/rolldown ^20.19.0||>=22.12.0 issue this replaced, and the
+# nodejs_24-not-found nixpkgs failure that came after that).
 #
+# Nixpacks' PHP provider always adds Node/npm nix packages to its setup
+# phase and an `npm install` to its install phase whenever a package.json
+# is present, with no config flag to opt out. So `[phases.setup]` and
+# `[phases.install]` below are full replacements (not "..."-extended) of
+# the provider's generated phases — see the actual build log for
+# confirmation of what the provider generates for this app:
+# {php}.withExtensions(...), nginx, libmysqlclient, {php}Packages.composer,
+# then Node/npm. setup here is that list minus the Node/npm entries.
+# Composer requires no extra `ext-*` packages beyond what withExtensions
+# already enables (this app's composer.json declares no ext-* requirements),
+# so the extensions list stays empty here too. install is the provider's
+# `mkdir`+`composer install` minus its `npm install`, with `--no-dev
+# --optimize-autoloader` added on top since this is the production install.
+#
+# Bump "php84" here if composer.json's `php` constraint ever moves to a new
+# major/minor — this bypasses the provider's own version auto-detection.
+[phases.setup]
+nixPkgs = [
+    "(php84.withExtensions (pe: pe.enabled ++ []))",
+    "nginx",
+    "libmysqlclient",
+    "php84Packages.composer",
+]
+
+[phases.install]
+cmds = [
+    "mkdir -p /var/log/nginx && mkdir -p /var/cache/nginx",
+    "composer install --no-dev --optimize-autoloader --ignore-platform-reqs",
+]
+
 # Rebuild and commit public/build/ locally (npm run build) whenever
-# frontend source changes — Railway will not do it for you anymore.
+# frontend source changes — Railway has no Node to build it and will
+# silently keep serving whatever was last committed otherwise.
 [phases.build]
-cmds = ["echo 'Using frontend assets committed in public/build/ — skipping npm run build.'"]
+cmds = ["echo 'Using frontend assets committed in public/build/ — Node is not installed in this build.'"]
