@@ -1,0 +1,14 @@
+# Frontend assets (public/build/) are built locally and committed to the
+# repo rather than built by Railway — sidesteps needing Node/Vite/Rolldown
+# to work correctly inside the build container at all. Nixpacks' PHP
+# provider still runs `composer install` in the separate "install" phase
+# (untouched by this file) and Node/npm install in that same phase; this
+# only replaces the "build" phase, which is npm-build-only when a
+# package.json is present — confirmed via Nixpacks' own docs before adding
+# this, since overriding the wrong phase could have silently dropped the
+# composer install step instead.
+#
+# Rebuild and commit public/build/ locally (npm run build) whenever
+# frontend source changes — Railway will not do it for you anymore.
+[phases.build]
+cmds = ["echo 'Using frontend assets committed in public/build/ — skipping npm run build.'"]

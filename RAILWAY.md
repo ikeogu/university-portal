@@ -9,6 +9,15 @@ no Dockerfile needed, no server to patch yourself.
 - **Web service** — this repo, deployed from GitHub (`ikeogu/university-portal`). Builder pinned
   to Nixpacks in `railway.toml` (not the newer Railpack, which is still beta) so PHP version and
   extensions come from `composer.json` reliably.
+- **Frontend assets are pre-built and committed, not built by Railway.** `nixpacks.toml` replaces
+  Nixpacks' default build phase (which is npm-build-only when a `package.json` is present —
+  confirmed against Nixpacks' own docs, so this can't accidentally skip `composer install`, which
+  lives in the separate install phase) with a no-op. `public/build/` is tracked in git instead of
+  gitignored. This sidesteps Node-version drift between this machine and Railway's build container
+  entirely — see [[cgpa-stack-decision]] memory for the Node 18 vs. `vite`/`rolldown`'s required
+  `^20.19.0 || >=22.12.0` issue this replaced. **Run `npm run build` locally and commit
+  `public/build/` before every push that touches `resources/js` or `resources/css`** — Railway
+  will silently keep serving whatever was last committed otherwise, not a fresh build.
 - **MySQL plugin** — Railway-managed, matches the stack decision already made for the VPS path.
   Postgres would work too (nothing in this codebase is MySQL-specific), but there's no reason to
   redecide that now.
@@ -79,7 +88,8 @@ there's a chicken-and-egg problem generating it via a command that itself needs 
 Push to `main` (or click `Deploy` if Railway hasn't auto-deployed from the initial connection).
 Railway will:
 
-1. Build via Nixpacks (`composer install --no-dev`, `npm ci && npm run build`, autoloader dump).
+1. Build via Nixpacks (`composer install --no-dev`, autoloader dump). The frontend build step is
+   a no-op per `nixpacks.toml` — it uses whatever's already committed in `public/build/`.
 2. Run the **pre-deploy command** from `railway.toml` — `php artisan migrate --force` — in a
    separate container, before the new version takes traffic. If it fails, the deploy stops and
    the previous version keeps serving, so a bad migration can't take the site down.
@@ -115,13 +125,20 @@ very first visitor after deploy doesn't pay that cost.
 ## 5. Redeploying after a code change
 
 ```bash
+npm run build              # only needed if resources/js or resources/css changed
+git add public/build
+git commit -m "..."
 git push origin main
 ```
 
-That's it — Railway redeploys automatically on push. The pre-deploy migrate step runs again
-(harmless no-op if there's nothing new to migrate), then the new version goes live. Expect a few
-seconds of downtime on services with a Volume attached (Railway's own constraint — a volume can't
-be mounted to two active deployments at once).
+Railway redeploys automatically on push. The pre-deploy migrate step runs again (harmless no-op
+if there's nothing new to migrate), then the new version goes live. Expect a few seconds of
+downtime on services with a Volume attached (Railway's own constraint — a volume can't be mounted
+to two active deployments at once).
+
+**Don't skip the local `npm run build` step above** — since Railway no longer builds the
+frontend itself, a push that changes `resources/js`/`resources/css` without also rebuilding and
+committing `public/build/` ships stale assets with no error or warning from Railway at all.
 
 ## 6. Backups — not optional
 

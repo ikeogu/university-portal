@@ -1,0 +1,1 @@
+var e={A:`#0a7d4f`,B:`#15697c`,C:`#22407e`,D:`#8a5b00`,E:`#a34c0a`,F:`#b3261e`};function t(e){return e>=70?`A`:e>=60?`B`:e>=50?`C`:e>=45?`D`:e>=40?`E`:`F`}export{t as n,e as t};
