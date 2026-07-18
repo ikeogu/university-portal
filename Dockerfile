@@ -45,14 +45,22 @@ RUN apk add --no-cache \
     libxml2-dev \
     zip
 
-# Install PHP extensions — dom/fileinfo/simplexml/xml/xmlreader/xmlwriter/
-# iconv are all required by phpoffice/phpspreadsheet (via maatwebsite/excel,
-# used throughout this app's import/upload system) per composer.lock, but
-# aren't part of php:8.4-fpm-alpine's default build. Laravel boots every
-# registered package's service provider on every request regardless of
-# route, so a missing one here breaks even /up, not just spreadsheet code
-# paths — confirmed by cross-checking composer.lock's declared ext-*
-# requirements against this list, not guessed from the symptom alone.
+# Install PHP extensions — dom/fileinfo/simplexml/xml/xmlreader/xmlwriter are
+# all required by phpoffice/phpspreadsheet (via maatwebsite/excel, used
+# throughout this app's import/upload system) per composer.lock, but aren't
+# part of php:8.4-fpm-alpine's default build. Laravel boots every registered
+# package's service provider on every request regardless of route, so a
+# missing one here breaks even /up, not just spreadsheet code paths —
+# confirmed by cross-checking composer.lock's declared ext-* requirements
+# against this list, not guessed from the symptom alone.
+#
+# ext-iconv is deliberately NOT installed here: Alpine's musl libc ships its
+# own iconv, which isn't what PHP's iconv extension source expects
+# (references GNU libiconv's _libiconv_version/libiconv() specifically) —
+# it fails to compile without a separate gnu-libiconv package and
+# Alpine/PHP-version-sensitive compiler flags. phpspreadsheet's iconv usage
+# is for legacy-encoding .xls/CSV handling; this app only ever reads/writes
+# .xlsx, so it's not expected to be on any path this app actually exercises.
 RUN docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
@@ -66,7 +74,6 @@ RUN docker-php-ext-configure gd \
         opcache \
         dom \
         fileinfo \
-        iconv \
         simplexml \
         xml \
         xmlreader \
