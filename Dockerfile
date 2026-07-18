@@ -1,40 +1,97 @@
-# Stage 1: build frontend assets
+# ==========================================================
+# Stage 1 - Build frontend assets
+# ==========================================================
 FROM node:20-alpine AS assets
+
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm ci
+
 COPY . .
+
 RUN npm run build
 
-# Stage 2: PHP app
-FROM php:8.3-fpm-alpine AS app
+
+# ==========================================================
+# Stage 2 - PHP Application
+# ==========================================================
+FROM php:8.3-fpm-alpine
+
 WORKDIR /var/www/html
 
-RUN apk add --no-cache nginx supervisor libzip-dev oniguruma-dev \
-    libpng-dev libjpeg-turbo-dev freetype-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql zip bcmath opcache mbstring gd
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+    COMPOSER_HOME=/tmp/composer
 
+# Install system dependencies
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    git \
+    unzip \
+    bash \
+    curl \
+    icu-dev \
+    libzip-dev \
+    oniguruma-dev \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libxml2-dev \
+    zip
+
+# Install PHP extensions
+RUN docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg \
+    && docker-php-ext-install \
+        pdo \
+        pdo_mysql \
+        bcmath \
+        mbstring \
+        zip \
+        gd \
+        opcache
+
+# Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
+# Copy application
 COPY . .
+
+# Install PHP dependencies
+RUN composer install \
+    --no-dev \
+    --prefer-dist \
+    --no-interaction \
+    --optimize-autoloader \
+    --ignore-platform-reqs
+
+# Copy frontend build
 COPY --from=assets /app/public/build ./public/build
 
-RUN composer dump-autoload --optimize \
-    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Laravel writable directories
+RUN mkdir -p \
+    storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache
 
+RUN chown -R www-data:www-data \
+    storage \
+    bootstrap/cache
+
+# Nginx & Supervisor
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 
 EXPOSE 8080
 
-# config:cache is deliberately NOT run during the build above — Railway
-# injects real env vars (DB credentials, APP_KEY, etc.) at container
-# runtime, not at `docker build` time, and this image has no .env baked in.
-# Caching config at build time would freeze in empty/missing values that
-# every later request would then be stuck with. Caching here instead, right
-# before the app starts serving, means it runs once per container start
-# with the real runtime environment already present.
-CMD ["sh", "-c", "php artisan config:cache && exec supervisord -c /etc/supervisord.conf"]
+CMD ["sh", "-c", "\
+php artisan config:clear && \
+php artisan route:clear && \
+php artisan view:clear && \
+php artisan event:clear && \
+php artisan config:cache && \
+exec supervisord -c /etc/supervisord.conf"]
