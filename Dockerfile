@@ -17,7 +17,7 @@ RUN apk add --no-cache nginx supervisor libzip-dev oniguruma-dev \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 COPY . .
 COPY --from=assets /app/public/build ./public/build
