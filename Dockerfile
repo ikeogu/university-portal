@@ -16,7 +16,11 @@ RUN npm run build
 # ==========================================================
 # Stage 2 - PHP Application
 # ==========================================================
-FROM php:8.3-fpm-alpine
+# Must be >=8.4.1 — symfony/http-foundation (and ~14 other Symfony 8.x
+# components this app locks) use PHP 8.4 property hooks internally, so
+# anything older fails with a raw parse error during `composer install`,
+# not an application bug. See RAILWAY.md.
+FROM php:8.4-fpm-alpine
 
 WORKDIR /var/www/html
 
@@ -31,6 +35,7 @@ RUN apk add --no-cache \
     unzip \
     bash \
     curl \
+    gettext \
     icu-dev \
     libzip-dev \
     oniguruma-dev \
@@ -82,13 +87,20 @@ RUN chown -R www-data:www-data \
     storage \
     bootstrap/cache
 
-# Nginx & Supervisor
-COPY docker/nginx.conf /etc/nginx/http.d/default.conf
+# Nginx & Supervisor — nginx.conf is a template, not the final config:
+# Railway assigns $PORT at container *startup*, not build time, so "listen"
+# can't be baked in here. It's rendered by CMD below instead.
+COPY docker/nginx.conf /etc/nginx/http.d/default.conf.template
 COPY docker/supervisord.conf /etc/supervisord.conf
 
 EXPOSE 8080
 
+# envsubst is restricted to just $PORT — nginx's own runtime variables
+# ($uri, $query_string, etc.) use the same ${...} syntax and would
+# otherwise get silently blanked out by an unrestricted envsubst pass.
 CMD ["sh", "-c", "\
+export PORT=\"${PORT:-8080}\" && \
+envsubst '${PORT}' < /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf && \
 php artisan config:clear && \
 php artisan route:clear && \
 php artisan view:clear && \

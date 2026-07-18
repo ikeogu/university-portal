@@ -1,29 +1,30 @@
 # Deployment Runbook — Railway
 
 Alternative to [DEPLOYMENT.md](DEPLOYMENT.md) (Contabo VPS). Same application, different host:
-Railway auto-detects this as a Laravel app (via Nixpacks) and runs it through PHP-FPM + Caddy —
-no Dockerfile needed, no server to patch yourself.
+deployed via a custom `Dockerfile` (`railway.toml` pins `builder = "DOCKERFILE"`) — a two-stage
+build producing an Nginx + PHP-FPM (via Supervisor) image, not Railway's Nixpacks auto-detection.
 
 ## Architecture on Railway
 
-- **Web service** — this repo, deployed from GitHub (`ikeogu/university-portal`). Builder pinned
-  to Nixpacks in `railway.toml` (not the newer Railpack, which is still beta) so PHP version and
-  extensions come from `composer.json` reliably.
-- **Frontend assets are pre-built and committed, not built by Railway — and Node is not installed
-  in the build container at all.** `nixpacks.toml` replaces Nixpacks' `setup` and `install` phases
-  (the PHP provider always adds Node/npm nix packages and an `npm install` step whenever a
-  `package.json` is present, with no config flag to opt out of that) with copies of the
-  auto-detected plan minus the Node/npm pieces, and replaces `build` with a no-op — confirmed
-  against Nixpacks' own docs/source so this can't accidentally skip `composer install`. `public/build/`
-  is tracked in git instead of gitignored. This sidesteps Node-version drift between this machine
-  and Railway's build container entirely — see [[cgpa-stack-decision]] memory for the Node 18 vs.
-  `vite`/`rolldown`'s required `^20.19.0 || >=22.12.0` issue, and the later `nodejs_24`-not-found
-  nixpkgs failure, both of which this replaced. **Run `npm run build` locally and commit
-  `public/build/` before every push that touches `resources/js` or `resources/css`** — Railway has
-  no Node to build it and will silently keep serving whatever was last committed otherwise.
-  If composer.json's `php` constraint ever moves to a new major/minor, bump the hardcoded `php84`
-  in `nixpacks.toml`'s `[phases.setup]` to match — overriding the phase means losing the provider's
-  own version auto-detection.
+- **Web service** — this repo, deployed from GitHub (`ikeogu/university-portal`), built from
+  `Dockerfile`. Stage 1 (`node:20-alpine`) runs `npm ci && npm run build`; Stage 2
+  (`php:8.4-fpm-alpine`) installs PHP extensions + Composer dependencies and copies the built
+  assets in from Stage 1. Frontend and backend are both built fresh inside the image on every
+  deploy — nothing needs to be pre-built or committed locally.
+- **PHP version is hardcoded in the Dockerfile's `FROM` line, not read from `composer.json`.**
+  Must stay `>=8.4.1` — `symfony/http-foundation` and ~14 other locked Symfony 8.x components use
+  PHP 8.4 property hooks internally, so anything older fails with a raw parse error during
+  `composer install`, not an application bug (this bit twice before the Dockerfile pinned it
+  explicitly — see [[cgpa-stack-decision]] memory for the full history). **If `composer.json`'s
+  own `"php"` constraint ever changes, bump the Dockerfile's `FROM php:X-fpm-alpine` to match —
+  the two are independent now and nothing keeps them in sync automatically.**
+- **Dynamic `$PORT`** — Railway assigns a port at container *startup*, not build time, and expects
+  the app listening on it. `docker/nginx.conf` is a *template* (`listen ${PORT};`), copied in as
+  `default.conf.template`; the container's `CMD` renders the real config via `envsubst` (with an
+  `${PORT:-8080}` shell-level fallback for local `docker run` testing) immediately before starting
+  Supervisor. `envsubst` is deliberately called with an explicit `'${PORT}'` argument, not run
+  unrestricted — nginx's own runtime variables (`$uri`, `$query_string`, etc.) use the identical
+  `$name` syntax and would otherwise get silently blanked out by a broad substitution pass.
 - **MySQL plugin** — Railway-managed, matches the stack decision already made for the VPS path.
   Postgres would work too (nothing in this codebase is MySQL-specific), but there's no reason to
   redecide that now.
@@ -33,9 +34,11 @@ no Dockerfile needed, no server to patch yourself.
   (imports run synchronously by design) — adding Redis would be pure unused infrastructure cost.
 - **Logging** — switches to `stderr` (Railway captures stdout/stderr centrally; a file at
   `storage/logs/laravel.log` on an ephemeral filesystem is not reliably readable).
-- **File storage** — a Railway **Volume** mounted over `storage/app/public`, where student photos
-  and HoD/Exam Officer signatures already save via the existing `public` disk. No code changes —
-  this is the same local-disk storage this app already uses, just made persistent across deploys.
+- **File storage** — a Railway **Volume** mounted over `/var/www/html/storage/app/public` (the
+  Dockerfile's `WORKDIR` — **not** `/app`, which only applied to the earlier Nixpacks-based
+  attempt), where student photos and HoD/Exam Officer signatures already save via the existing
+  `public` disk. No code changes — this is the same local-disk storage this app already uses,
+  just made persistent across deploys.
 - **No separate worker or cron service** — nothing is queued, nothing is scheduled yet. Add a
   worker service only if a queued job ever gets introduced; add a Cron Job service only once
   something is actually scheduled (`routes/console.php` / `Kernel::schedule()`).
@@ -46,13 +49,12 @@ All of this is done in the Railway dashboard (or `railway` CLI, if you install i
 I don't have it installed here and can't authenticate a browser login on your behalf).
 
 1. **New Project → Deploy from GitHub repo** → select `ikeogu/university-portal`, branch `main`.
-   Railway will detect the push to `railway.toml` and use Nixpacks per that file.
+   Railway reads `railway.toml`, sees `builder = "DOCKERFILE"`, and builds `Dockerfile` directly.
 2. **Add a database**: `+ New` → `Database` → `MySQL`. Railway provisions it and exposes
    `MYSQLHOST`, `MYSQLPORT`, `MYSQLDATABASE`, `MYSQLUSER`, `MYSQLPASSWORD` on that plugin service.
 3. **Attach a Volume to the web service**: service → `Settings` → `Volumes` → `+ New Volume`.
-   Mount path: `/app/storage/app/public` (Nixpacks places the app at `/app`; if your build logs
-   show a different working directory, mount there instead — check the deploy logs for the
-   `WORKDIR` Nixpacks used).
+   Mount path: **`/var/www/html/storage/app/public`** (matches the Dockerfile's `WORKDIR
+   /var/www/html`).
 4. **Generate a domain**: service → `Settings` → `Networking` → `Generate Domain` (or attach your
    own custom domain there instead).
 
@@ -84,6 +86,7 @@ LOG_STDERR_FORMATTER=\Monolog\Formatter\JsonFormatter
 That's the full list — `SESSION_DRIVER`, `CACHE_STORE`, `QUEUE_CONNECTION`, and `FILESYSTEM_DISK`
 are deliberately absent because the defaults already baked into this codebase are correct for
 Railway too (see Architecture above). Don't add `REDIS_URL`/a Redis plugin unless that changes.
+**Don't set `PORT`** — Railway injects it itself at runtime; the Dockerfile's `CMD` reads it.
 
 `APP_KEY` specifically: generate it **locally** (`php artisan key:generate --show` in this repo)
 rather than trying to generate it on Railway — the app needs a valid key to boot at all, so
@@ -94,13 +97,13 @@ there's a chicken-and-egg problem generating it via a command that itself needs 
 Push to `main` (or click `Deploy` if Railway hasn't auto-deployed from the initial connection).
 Railway will:
 
-1. Build via Nixpacks (`composer install --no-dev --optimize-autoloader`, per `nixpacks.toml`).
-   The frontend build step is a no-op — it uses whatever's already committed in `public/build/`,
-   since Node isn't installed in this build container at all.
+1. Build the Docker image: Stage 1 builds frontend assets, Stage 2 installs PHP extensions and
+   Composer dependencies and assembles the final image.
 2. Run the **pre-deploy command** from `railway.toml` — `php artisan migrate --force` — in a
    separate container, before the new version takes traffic. If it fails, the deploy stops and
    the previous version keeps serving, so a bad migration can't take the site down.
-3. Start the web service.
+3. Start the container: `CMD` renders `nginx.conf` from its template with the real `$PORT`, clears
+   and rebuilds Laravel's config cache, then starts Supervisor (which runs php-fpm and nginx).
 
 ### One-time only, after the very first successful deploy
 
@@ -123,7 +126,8 @@ very first visitor after deploy doesn't pay that cost.
 ## 4. Verifying
 
 - Visit the generated/custom domain — landing page should load, `/up` should return 200 (that's
-  what Railway's own healthcheck in `railway.toml` polls).
+  what Railway's own healthcheck in `railway.toml` polls). A 502 here specifically (build/deploy
+  succeeded but nothing answers) points at the `$PORT`/nginx wiring, not the application.
 - Sign in as the admin account `admin:create-first` created.
 - Onboard a test student with a photo, confirm the photo actually renders (proves the Volume +
   symlink are both wired correctly — this is the one thing that's genuinely different from the
@@ -132,20 +136,14 @@ very first visitor after deploy doesn't pay that cost.
 ## 5. Redeploying after a code change
 
 ```bash
-npm run build              # only needed if resources/js or resources/css changed
-git add public/build
-git commit -m "..."
 git push origin main
 ```
 
-Railway redeploys automatically on push. The pre-deploy migrate step runs again (harmless no-op
-if there's nothing new to migrate), then the new version goes live. Expect a few seconds of
-downtime on services with a Volume attached (Railway's own constraint — a volume can't be mounted
-to two active deployments at once).
-
-**Don't skip the local `npm run build` step above** — since Railway no longer builds the
-frontend itself, a push that changes `resources/js`/`resources/css` without also rebuilding and
-committing `public/build/` ships stale assets with no error or warning from Railway at all.
+That's it — Railway rebuilds the whole image (frontend included) from source on every push, so
+there's no separate "remember to rebuild assets locally" step. The pre-deploy migrate step runs
+again (harmless no-op if there's nothing new to migrate), then the new version goes live. Expect
+a few seconds of downtime on services with a Volume attached (Railway's own constraint — a volume
+can't be mounted to two active deployments at once).
 
 ## 6. Backups — not optional
 
